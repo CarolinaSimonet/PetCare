@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:petcare/screens/welcome/register_page.dart';
+
+import 'login_page.dart';
 
 
 class WelcomeScreen extends StatefulWidget {
@@ -63,8 +66,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               margin: const EdgeInsets.only(left: 30, right: 30),
               child: ElevatedButton(
                 onPressed: (){
-                  //Navigator.push(context,
-                      //MaterialPageRoute(builder: (context) => const RegisterScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const RegisterScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.brown.shade800, backgroundColor: Colors.transparent, minimumSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height/12),
@@ -88,8 +91,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               margin: const EdgeInsets.only(left: 30, right: 30),
               child: ElevatedButton(
                 onPressed: (){
-                  //Navigator.push(context,
-                      //MaterialPageRoute(builder: (context) => const LoginScreen()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.brown.shade800, backgroundColor: Colors.white, minimumSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height/12),
