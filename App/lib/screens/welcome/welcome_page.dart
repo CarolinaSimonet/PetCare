@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:petcare/screens/welcome/register_page.dart';
+import 'register_page.dart';
 
 import 'login_page.dart';
 

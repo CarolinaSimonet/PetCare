@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../general/navigation_bar.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -215,8 +217,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       onPressed: (){
-                       // Navigator.push(context,
-                            //MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
                       },
                       child: Container(
                           padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
