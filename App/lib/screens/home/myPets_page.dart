@@ -138,7 +138,10 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.fastfood_sharp, size: 16.0, color: Colors.brown.shade800),
+                            const ImageIcon(
+                              AssetImage('assets/images/dogFood.png'), // Replace with your image path
+                              size: 35.0, // Adjust size as needed
+                            ),
                             Padding(
                               padding: const EdgeInsets.only(left: 10.0), // Adjust padding for desired space
                               child: Text(
@@ -154,8 +157,10 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
                         ),
                         Row(
                           children: [
-                            Icon(Icons.directions_walk,
-                                size: 16.0, color: Colors.brown.shade800),
+                            const ImageIcon(
+                              AssetImage('assets/images/walkDog.png'), // Replace with your image path
+                              size: 35.0, // Adjust size as needed
+                            ),
                             Padding(
                               padding: const EdgeInsets.only(left: 10.0),
                             child: Text(

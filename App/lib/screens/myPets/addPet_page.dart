@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../general/generic_app_bar.dart';
+
 
 class AddPetScreen extends StatefulWidget {
   const AddPetScreen({Key? key}) : super(key: key);
@@ -36,85 +38,73 @@ class _AddPetScreenState extends State<AddPetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: false,
+      backgroundColor: const Color(0xfffafbfa),
+      appBar:
+      GenericAppBar(
+        title: "Add New Pet",
+        actions: [
+          IconButton(
+            icon: Icon(Icons.calendar_month, size: 40, color: Colors.brown.shade800),
+            onPressed: () {
+              // Add your onPressed logic here
+            },
+          ),
+        ],
+      ),
       body: Container(
         margin: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+          Container(
+          margin: const EdgeInsets.only(left: 10, top: 20),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 50),
-                child: Row(
+                width: 141.69,
+                height: 129.25,
+                child: Stack(
                   children: [
-                    ClipOval(
-                      child: Image.asset(
-                        'images/Logo2.png',
-                        width: 140,
-                        height: 140,
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Register on',
-                            style: TextStyle(
-                                color: Colors.brown.shade800,
-                                fontFamily: 'Inter',
-                                fontSize: 25
-                            ),
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      child: Container(
+                        width: 141.69,
+                        height: 129.25,
+                        decoration: ShapeDecoration(
+                          color: Color(0xFFF6F6F6),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(width: 1, color: Color(0xFFE7E7E7)),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          Text(
-                            'PetCare',
-                            style: TextStyle(
-                                color: Colors.brown.shade800,
-                                fontFamily: 'Inter',
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold
-                            ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 20.91,
+                      top: 53.56,
+                      child: SizedBox(
+                        width: 99.88,
+                        height: 23.29,
+                        child: Text(
+                          'Add Photo',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFFABABAB),
+                            fontSize: 16,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            height: 0,
                           ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(left: 10, top: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Don't have an account yet?",
-                      style: TextStyle(
-                        color: Colors.brown.shade800,
-                        fontFamily: 'Inter',
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      'Create your account here',
-                      style: TextStyle(
-                          color: Colors.brown.shade800,
-                          fontFamily: 'Inter',
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),
-                    ),
-                    Text(
-                      "We can't wait to have you!",
-                      style: TextStyle(
-                        color: Colors.brown.shade800,
-                        fontFamily: 'Inter',
-                        fontSize: 16,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 30,),
               Container(
                 margin: const EdgeInsets.all(10),
                 child: TextField(
@@ -276,8 +266,8 @@ class _AddPetScreenState extends State<AddPetScreen> {
             ],
           ),
         ),
-      ),
-    );
+      ])),
+    )) ;
 
   }
 }

@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     ClipOval(
                       child: Image.asset(
-                        'images/Logo2.png',
+                        'assets/images/Logo2.png',
                         width: 140,
                         height: 140,
                       ),

@@ -26,7 +26,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           image: DecorationImage(
             opacity: 0.5,
             fit: BoxFit.cover,
-            image: const AssetImage('images/dogs1.jpg'),
+            image: const AssetImage('assets/images/dogs1.jpg'),
             colorFilter: ColorFilter.mode(Colors.lightBlue.withOpacity(0.2), BlendMode.overlay),
           ),
         ),
