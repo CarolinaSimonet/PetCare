@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:petcare/screens/general/navigation_bar.dart';
 
 import '../../utils/data_classes.dart';
 import '../../utils/factory.dart';
 import '../general/generic_app_bar.dart';
 import '../myPets/addPet_page.dart';
 import '../welcome/welcome_page.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,9 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Random random = Random();
-  List <MyPet> petsSet = myPetsExample;
-
-
+  List<MyPet> petsSet = myPetsExample;
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +40,11 @@ class _HomeScreenState extends State<HomeScreen> {
       daySections.add(buildDaySection(formattedDay));
 
       DateTime unformattedDay =
-      DateTime.now().add(Duration(days: additionalDay++));
+          DateTime.now().add(Duration(days: additionalDay++));
       List<MyPet> selectedPets = myPetsExample
           .where((pet) => (pet.birthDate.day == unformattedDay.day &&
-          pet.birthDate.month == unformattedDay.month &&
-          pet.birthDate.year == unformattedDay.year))
+              pet.birthDate.month == unformattedDay.month &&
+              pet.birthDate.year == unformattedDay.year))
           .toList();
 
       for (MyPet appointment in selectedPets) {
@@ -55,15 +53,14 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-
     return Scaffold(
       extendBodyBehindAppBar: false,
       backgroundColor: const Color(0xfffafbfa),
+      bottomNavigationBar: const NavigationBarScreen(),
       appBar: GenericAppBar(
         title: "Pet Track",
         icon: Icons.add_circle,
-        mpr: MaterialPageRoute(
-            builder: (context) => const AddPetScreen()),
+        mpr: MaterialPageRoute(builder: (context) => const AddPetScreen()),
         actions: [
           IconButton(
             icon: Icon(Icons.settings, size: 40, color: Colors.brown.shade800),
@@ -73,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body:  Column(
+      body: Column(
         children: [
           Expanded(
             child: ListView(children: daySections),
@@ -169,7 +166,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                 /** Padding(
+                ],
+              ),
+            )));
+  }
+}
+/** Padding(
                     padding: const EdgeInsets.only(right: 35.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -225,8 +227,3 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   )**/
-                ],
-              ),
-            )));
-  }
-}

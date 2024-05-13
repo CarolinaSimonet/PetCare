@@ -40,7 +40,6 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    _initCamera();
     _locationStream = _location.onLocationChanged;
     _location.requestPermission().then((granted) {
       if (granted != PermissionStatus.granted) {
@@ -72,40 +71,6 @@ class _MapPageState extends State<MapPage> {
         ];
       });
     });
-  }
-
-  void _initCamera() async {
-    cameras = await availableCameras();
-    if (cameras != null && cameras!.isNotEmpty) {
-      _cameraController = CameraController(cameras![0], ResolutionPreset.low);
-      _initializeCameraFuture = _cameraController!.initialize();
-    }
-  }
-
-  Future<void> _takePicture() async {
-    if (!_cameraController!.value.isInitialized) {
-      print('Controller is not initialized');
-      return;
-    }
-
-    try {
-      await _initializeCameraFuture;
-      final image = await _cameraController!.takePicture();
-      final directory = await getApplicationDocumentsDirectory();
-      final imagePath =
-          '${directory.path}/${DateTime.now().toIso8601String()}.jpg';
-      final imageFile = File(imagePath);
-      await imageFile.writeAsBytes(await image.readAsBytes());
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          content: Text('Picture saved to $imagePath'),
-        ),
-      );
-    } catch (e) {
-      print('Error taking picture: $e');
-    }
   }
 
   Future<void> _showAnimalChoiceDialog() async {
@@ -205,7 +170,8 @@ class _MapPageState extends State<MapPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CameraWidget()),
+                        MaterialPageRoute(
+                            builder: (context) => const CameraWidget()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -273,7 +239,7 @@ class _MapPageState extends State<MapPage> {
           content: Text('Tem a certeza que pertende terminar o seu passeio'),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.close),
+              icon: Icon(Icons.cancel_outlined),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
                 // Implement your camera functionality here
@@ -288,6 +254,7 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Stack(children: [
         FlutterMap(
             mapController: _mapController,

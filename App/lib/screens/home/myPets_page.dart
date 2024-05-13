@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:petcare/screens/general/navigation_bar.dart';
 
 import '../../utils/data_classes.dart';
 import '../../utils/factory.dart';
 import '../general/generic_app_bar.dart';
 import '../myPets/addPet_page.dart';
 import '../welcome/welcome_page.dart';
-
 
 class MyPetsScreen extends StatefulWidget {
   const MyPetsScreen({Key? key}) : super(key: key);
@@ -19,9 +19,7 @@ class MyPetsScreen extends StatefulWidget {
 
 class _MyPetsScreenState extends State<MyPetsScreen> {
   Random random = Random();
-  List <MyPet> petsSet = myPetsExample;
-
-
+  List<MyPet> petsSet = myPetsExample;
 
   @override
   Widget build(BuildContext context) {
@@ -33,33 +31,30 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
     ];
     int colorIdx = 0;
 
-
-
-      for (MyPet appointment in myPetsExample) {
-        daySections.add(buildCard(appointment, cardColors[colorIdx]));
-        colorIdx < 2 ? colorIdx++ : colorIdx = 0;
-      }
-
-
+    for (MyPet appointment in myPetsExample) {
+      daySections.add(buildCard(appointment, cardColors[colorIdx]));
+      colorIdx < 2 ? colorIdx++ : colorIdx = 0;
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: false,
       backgroundColor: const Color(0xfffafbfa),
+      bottomNavigationBar: const NavigationBarScreen(),
       appBar: GenericAppBar(
         title: "My Pets",
         icon: Icons.add_circle,
-        mpr: MaterialPageRoute(
-            builder: (context) => const AddPetScreen()),
+        mpr: MaterialPageRoute(builder: (context) => const AddPetScreen()),
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_month, size: 40, color: Colors.brown.shade800),
+            icon: Icon(Icons.calendar_month,
+                size: 40, color: Colors.brown.shade800),
             onPressed: () {
               // Add your onPressed logic here
             },
           ),
         ],
       ),
-      body:  Column(
+      body: Column(
         children: [
           Expanded(
             child: ListView(children: daySections),
@@ -68,7 +63,6 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
       ),
     );
   }
-
 
   Widget buildCard(MyPet pet, Color color) {
     return GestureDetector(
@@ -129,28 +123,31 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
                       ],
                     ),
                   ),
-
-                   Padding(
-                      padding: const EdgeInsets.only(right: 30.0),
-                      child: Column(
+                  Padding(
+                    padding: const EdgeInsets.only(right: 30.0),
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
                             const ImageIcon(
-                              AssetImage('assets/images/dogFood.png'), // Replace with your image path
+                              AssetImage(
+                                  'assets/images/dogFood.png'), // Replace with your image path
                               size: 35.0, // Adjust size as needed
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 10.0), // Adjust padding for desired space
+                              padding: const EdgeInsets.only(
+                                  left:
+                                      10.0), // Adjust padding for desired space
                               child: Text(
                                 "${pet.actualPortionsFood}/${pet.portionsFood}",
                                 style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: 'Inter',
-                                    color: Colors.brown.shade800,
-                                    fontWeight: FontWeight.bold,),
+                                  fontSize: 14,
+                                  fontFamily: 'Inter',
+                                  color: Colors.brown.shade800,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ],
@@ -158,26 +155,27 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
                         Row(
                           children: [
                             const ImageIcon(
-                              AssetImage('assets/images/walkDog.png'), // Replace with your image path
+                              AssetImage(
+                                  'assets/images/walkDog.png'), // Replace with your image path
                               size: 35.0, // Adjust size as needed
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 10.0),
-                            child: Text(
-                              "${pet.actualKmWalk}/${pet.kmWalk} km",
-                              style: TextStyle(
+                              child: Text(
+                                "${pet.actualKmWalk}/${pet.kmWalk} km",
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontFamily: 'Inter',
                                   color: Colors.brown.shade800,
-                                  fontWeight: FontWeight.bold,),
-
-                            ),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                       ],
-                      ),
-                   )
+                    ),
+                  )
                 ],
               ),
             )));

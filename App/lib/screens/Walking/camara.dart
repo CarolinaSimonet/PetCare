@@ -54,33 +54,39 @@ class _CameraWidgetState extends State<CameraWidget> {
 
   Future<void> _takePicture() async {
     if (_controller == null || !_controller!.value.isInitialized) {
-      print('Error: Select a camera first.');
+      print('CameraController is not initialized');
       return;
     }
+
     try {
-      final image = await _controller!.takePicture();
-      final bytes = await image.readAsBytes();
+      print('Taking picture...');
+      final XFile image = await _controller!.takePicture();
+      final Uint8List bytes = await image.readAsBytes();
 
-      String fileName = 'images/${DateTime.now().millisecondsSinceEpoch}.jpg';
-      Reference ref = FirebaseStorage.instance.ref().child(fileName);
+      final String fileName =
+          'images/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final Reference ref = FirebaseStorage.instance.ref().child(fileName);
 
-      // Upload the file
+      print('Uploading image...');
       await ref.putData(bytes);
+      final String imageUrl = await ref.getDownloadURL();
 
-      // Optionally get the download URL
-      String imageUrl = await ref.getDownloadURL();
+      print('Image uploaded. URL: $imageUrl');
+
+      await saveImageMetadata(imageUrl, "userId", "activityId", DateTime.now());
+
       setState(() {
         _base64Image = base64Encode(bytes);
-        _imageBytes = bytes; // Save the image bytes for display
+        _imageBytes = bytes; // Display the taken image on screen
       });
-      await saveImageMetadata(imageUrl, "userId", "activityId", DateTime.now());
-      print("Image URL: $imageUrl");
+
+      print('Metadata saved and UI updated.');
     } catch (e) {
-      print(e);
-      return;
+      print('Error occurred during taking or uploading the picture: $e');
     }
   }
 
+/*
   Future<void> sendImageToAPI(String base64Image) async {
     final String url = "https://vision.foodvisor.io/api/1.0/en/analysis/";
     final headers = {
@@ -137,7 +143,7 @@ class _CameraWidgetState extends State<CameraWidget> {
         },
       );
     }
-  }
+  }*/
 
   @override
   void dispose() {
@@ -152,24 +158,15 @@ class _CameraWidgetState extends State<CameraWidget> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.of(context).pop(); // Closes the camera screen
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(),
       body: Column(
         children: <Widget>[
           Expanded(
-            child: _imageBytes == null
-                ? Container(
-                    decoration: BoxDecoration(color: Colors.black),
-                    child: CameraPreview(_controller!))
-                : Image.memory(_imageBytes!),
+            child: _controller != null && _controller!.value.isInitialized
+                ? (_imageBytes != null
+                    ? Image.memory(_imageBytes!)
+                    : CameraPreview(_controller!))
+                : Center(child: CircularProgressIndicator()),
           ),
           SizedBox(height: 120),
           Padding(
@@ -178,7 +175,9 @@ class _CameraWidgetState extends State<CameraWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: _takePicture,
+                  onPressed: () => {
+                    _takePicture(),
+                  },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(93, 99, 209, 1),
                       foregroundColor: Colors.white,
@@ -190,7 +189,8 @@ class _CameraWidgetState extends State<CameraWidget> {
                   ElevatedButton(
                     onPressed: () {
                       if (_base64Image != null) {
-                        sendImageToAPI(_base64Image!);
+                        // sendImageToAPI(_base64Image!);
+                        print('has a image ');
                       } else {
                         print("No image selected");
                       }

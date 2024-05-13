@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:petcare/screens/Walking/map_page.dart';
 
 import '../home/home_page.dart';
 import '../home/myPets_page.dart';
-
-
 
 class NavigationBarScreen extends StatefulWidget {
   const NavigationBarScreen({Key? key}) : super(key: key);
@@ -18,16 +17,16 @@ class _NavigationBarState extends State<NavigationBarScreen> {
 
   final List<Widget> _pages = [
     const HomeScreen(), // Home content
-    const MyPetsScreen(),// Messages content
-    //const BookAppointmentScreen(), // Bookings content
-    //const CalendarScreen(), //Calendar content
-    //const MyProfileScreen(), // Profile content
+    const MyPetsScreen(),
+    MapPage(),
+    const Placeholder(),
+    const Placeholder(), // Messages content
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const  Color(0xFFC7E6F3),
+      backgroundColor: const Color(0xFFC7E6F3),
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.brown.shade800,
         color: const Color(0xFFC7E6F3),
@@ -35,7 +34,8 @@ class _NavigationBarState extends State<NavigationBarScreen> {
           Icon(Icons.home_filled, size: 30, color: Colors.brown.shade800),
           Icon(Icons.pets_rounded, size: 30, color: Colors.brown.shade800),
           Icon(Icons.directions_run, size: 50, color: Colors.brown.shade800),
-          Icon(Icons.analytics_outlined, size: 30, color: Colors.brown.shade800),
+          Icon(Icons.analytics_outlined,
+              size: 30, color: Colors.brown.shade800),
           Icon(Icons.person, size: 30, color: Colors.brown.shade800),
         ],
         onTap: (index) {

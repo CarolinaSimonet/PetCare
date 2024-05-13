@@ -8,11 +8,14 @@ import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/welcome/welcome_page.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    print('Firebase initialized successfully');
+  } catch (e) {
+    print('Failed to initialize Firebase: $e');
+  }
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -51,6 +54,6 @@ class _MyAppState extends State<MyApp> {
             border: const OutlineInputBorder(borderSide: BorderSide.none),
           ),
         ),
-        home: MapPage());
+        home: WelcomeScreen());
   }
 }

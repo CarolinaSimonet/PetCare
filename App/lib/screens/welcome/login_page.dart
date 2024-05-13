@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:petcare/screens/data/firebase_functions.dart';
+import 'package:petcare/widget_tree.dart';
 
 import '../general/navigation_bar.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,7 +13,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   late TextEditingController emailController;
   late TextEditingController passwordController;
 
@@ -27,6 +28,27 @@ class _LoginScreenState extends State<LoginScreen> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> signInWithEmailAndPassword() async {
+    try {
+      await Auth().signInWithEmailAndPassword(
+        emailController.text,
+        passwordController.text,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => WidgetTree()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'An error occurred during sign-in.'),
+          backgroundColor:
+              Colors.red, // Optional: change background color to red for errors
+        ),
+      );
+    }
   }
 
   @override
@@ -59,8 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                                 color: Colors.brown.shade800,
                                 fontFamily: 'Inter',
-                                fontSize: 25
-                            ),
+                                fontSize: 25),
                           ),
                           Text(
                             'PetCare',
@@ -68,8 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.brown.shade800,
                                 fontFamily: 'Inter',
                                 fontSize: 25,
-                                fontWeight: FontWeight.bold
-                            ),
+                                fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -106,8 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.brown.shade800,
                               fontFamily: 'Inter',
                               fontSize: 16,
-                              fontWeight: FontWeight.bold
-                          ),
+                              fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '.',
@@ -122,7 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 80,),
+              const SizedBox(
+                height: 80,
+              ),
               Container(
                 margin: const EdgeInsets.all(10),
                 child: TextField(
@@ -132,16 +153,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     fillColor: Colors.grey.shade200,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     labelText: 'Email',
-                    labelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Inter'),
+                    labelStyle: const TextStyle(
+                        color: Colors.grey, fontFamily: 'Inter'),
                     floatingLabelStyle: TextStyle(color: Colors.brown.shade800),
-                    prefixIcon: Icon(Icons.email_outlined, color: Colors.brown.shade800,),
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
+                      color: Colors.brown.shade800,
+                    ),
                   ),
                 ),
               ),
@@ -155,20 +178,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     fillColor: Colors.grey.shade200,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     labelText: 'Password',
-                    labelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Inter'),
+                    labelStyle: const TextStyle(
+                        color: Colors.grey, fontFamily: 'Inter'),
                     floatingLabelStyle: TextStyle(color: Colors.brown.shade800),
-                    prefixIcon: Icon(Icons.key, color: Colors.brown.shade800,),
+                    prefixIcon: Icon(
+                      Icons.key,
+                      color: Colors.brown.shade800,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Container(
                 margin: const EdgeInsets.only(left: 10, right: 10),
                 child: Row(
@@ -182,8 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                               fontFamily: 'Inter',
                               color: Colors.grey,
-                              fontSize: 14
-                          ),
+                              fontSize: 14),
                         )
                       ],
                     ),
@@ -194,14 +220,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                               fontFamily: 'Inter',
                               color: Colors.grey,
-                              fontSize: 14
-                          ),
-                        )
-                    ),
+                              fontSize: 14),
+                        )),
                   ],
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -209,22 +235,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     margin: const EdgeInsets.all(10),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.brown.shade800, backgroundColor: const Color(0xFFC8E7F4),
-                        textStyle: const TextStyle(fontSize: 20, fontFamily: 'Inter', fontWeight: FontWeight.w700),
+                        foregroundColor: Colors.brown.shade800,
+                        backgroundColor: const Color(0xFFC8E7F4),
+                        textStyle: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: (){
+                      onPressed: () {
+                        signInWithEmailAndPassword();
+                      },
+                      /*(){
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
-                      },
+                      },*/
+
                       child: Container(
                           padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-                          child: const Text('LOGIN')
-                      ),
-
+                          child: const Text('LOGIN')),
                     ),
                   ),
                 ],
@@ -234,10 +266,8 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
-
   }
 }
-
 
 class CheckboxButton extends StatefulWidget {
   const CheckboxButton({super.key});

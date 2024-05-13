@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:petcare/screens/data/firebase_functions.dart';
+import 'package:petcare/widget_tree.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -9,7 +11,6 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
@@ -31,6 +32,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> createUserWithEmailAndPassword() async {
+    try {
+      await Auth().createUserWithEmailAndPassword(
+        emailController.text,
+        passwordController.text,
+        nameController.text,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => WidgetTree()),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'An error occurred during registing.'),
+          backgroundColor:
+              Colors.red, // Optional: change background color to red for errors
+        ),
+      );
+    }
   }
 
   @override
@@ -63,8 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(
                                 color: Colors.brown.shade800,
                                 fontFamily: 'Inter',
-                                fontSize: 25
-                            ),
+                                fontSize: 25),
                           ),
                           Text(
                             'PetCare',
@@ -72,8 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 color: Colors.brown.shade800,
                                 fontFamily: 'Inter',
                                 fontSize: 25,
-                                fontWeight: FontWeight.bold
-                            ),
+                                fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -100,8 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           color: Colors.brown.shade800,
                           fontFamily: 'Inter',
                           fontSize: 16,
-                          fontWeight: FontWeight.bold
-                      ),
+                          fontWeight: FontWeight.bold),
                     ),
                     Text(
                       "We can't wait to have you!",
@@ -114,7 +134,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 30,),
+              const SizedBox(
+                height: 30,
+              ),
               Container(
                 margin: const EdgeInsets.all(10),
                 child: TextField(
@@ -124,16 +146,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fillColor: Colors.grey.shade200,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     labelText: 'Name',
-                    labelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Inter'),
+                    labelStyle: const TextStyle(
+                        color: Colors.grey, fontFamily: 'Inter'),
                     floatingLabelStyle: TextStyle(color: Colors.brown.shade800),
-                    prefixIcon: Icon(Icons.person, color: Colors.brown.shade800,),
+                    prefixIcon: Icon(
+                      Icons.person,
+                      color: Colors.brown.shade800,
+                    ),
                   ),
                 ),
               ),
@@ -146,16 +170,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fillColor: Colors.grey.shade200,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     labelText: 'Email',
-                    labelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Inter'),
+                    labelStyle: const TextStyle(
+                        color: Colors.grey, fontFamily: 'Inter'),
                     floatingLabelStyle: TextStyle(color: Colors.brown.shade800),
-                    prefixIcon: Icon(Icons.email_outlined, color: Colors.brown.shade800,),
+                    prefixIcon: Icon(
+                      Icons.email_outlined,
+                      color: Colors.brown.shade800,
+                    ),
                   ),
                 ),
               ),
@@ -168,16 +194,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fillColor: Colors.grey.shade200,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     labelText: 'Phone',
-                    labelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Inter'),
+                    labelStyle: const TextStyle(
+                        color: Colors.grey, fontFamily: 'Inter'),
                     floatingLabelStyle: TextStyle(color: Colors.brown.shade800),
-                    prefixIcon: Icon(Icons.phone_android_outlined, color: Colors.brown.shade800,),
+                    prefixIcon: Icon(
+                      Icons.phone_android_outlined,
+                      color: Colors.brown.shade800,
+                    ),
                   ),
                 ),
               ),
@@ -191,16 +219,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fillColor: Colors.grey.shade200,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     labelText: 'Password',
-                    labelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Inter'),
+                    labelStyle: const TextStyle(
+                        color: Colors.grey, fontFamily: 'Inter'),
                     floatingLabelStyle: TextStyle(color: Colors.brown.shade800),
-                    prefixIcon: Icon(Icons.key, color: Colors.brown.shade800,),
+                    prefixIcon: Icon(
+                      Icons.key,
+                      color: Colors.brown.shade800,
+                    ),
                   ),
                 ),
               ),
@@ -214,20 +244,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fillColor: Colors.grey.shade200,
                     enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)
-                    ),
+                        borderRadius: BorderRadius.circular(10)),
                     labelText: 'Repeat Password',
-                    labelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Inter'),
+                    labelStyle: const TextStyle(
+                        color: Colors.grey, fontFamily: 'Inter'),
                     floatingLabelStyle: TextStyle(color: Colors.brown.shade800),
-                    prefixIcon: Icon(Icons.key, color: Colors.brown.shade800,),
+                    prefixIcon: Icon(
+                      Icons.key,
+                      color: Colors.brown.shade800,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Container(
                 margin: const EdgeInsets.only(left: 10, right: 10),
                 child: Row(
@@ -239,13 +273,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: TextStyle(
                           fontFamily: 'Inter',
                           color: Colors.grey,
-                          fontSize: 14
-                      ),
+                          fontSize: 14),
                     )
                   ],
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -253,22 +288,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     margin: const EdgeInsets.all(10),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.brown.shade800, backgroundColor: const Color(0xFFC8E7F4),
-                        textStyle: const TextStyle(fontSize: 20, fontFamily: 'Inter', fontWeight: FontWeight.w700),
+                        foregroundColor: Colors.brown.shade800,
+                        backgroundColor: const Color(0xFFC8E7F4),
+                        textStyle: const TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: (){
+                      onPressed: () {
                         //Navigator.push(context,
-                           // MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
+                        // MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
+                        createUserWithEmailAndPassword();
                       },
                       child: Container(
                           padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-                          child: const Text('REGISTER')
-                      ),
-
+                          child: const Text('REGISTER')),
                     ),
                   ),
                 ],
@@ -278,10 +316,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
-
   }
 }
-
 
 class CheckboxButton extends StatefulWidget {
   const CheckboxButton({super.key});
