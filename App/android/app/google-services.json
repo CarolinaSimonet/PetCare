@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "740500358575",
+    "firebase_url": "https://scmu-10efc-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "scmu-10efc",
+    "storage_bucket": "scmu-10efc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740500358575:android:61bd359fce864cdd875b5a",
+        "android_client_info": {
+          "package_name": "com.example.petcare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBdQJAiyFF3oycPJJHogbMW2ss_Ik4gaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,11 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:petcare/firebase_options.dart';
 import 'package:petcare/screens/Walking/ConfirmationRFID_page.dart';
 import 'package:petcare/screens/Walking/camara.dart';
 import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/welcome/welcome_page.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

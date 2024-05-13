@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:petcare/screens/data/firebase_functions.dart';
 
 class CameraWidget extends StatefulWidget {
   const CameraWidget({super.key});
@@ -58,12 +60,21 @@ class _CameraWidgetState extends State<CameraWidget> {
     try {
       final image = await _controller!.takePicture();
       final bytes = await image.readAsBytes();
+
+      String fileName = 'images/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      Reference ref = FirebaseStorage.instance.ref().child(fileName);
+
+      // Upload the file
+      await ref.putData(bytes);
+
+      // Optionally get the download URL
+      String imageUrl = await ref.getDownloadURL();
       setState(() {
         _base64Image = base64Encode(bytes);
         _imageBytes = bytes; // Save the image bytes for display
       });
-      // You can use _base64Image for API calls or debugging
-      print(_base64Image);
+      await saveImageMetadata(imageUrl, "userId", "activityId", DateTime.now());
+      print("Image URL: $imageUrl");
     } catch (e) {
       print(e);
       return;
