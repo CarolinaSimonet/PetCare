@@ -36,10 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
         emailController.text,
         passwordController.text,
       );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => WidgetTree()),
-      );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -249,11 +245,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         signInWithEmailAndPassword();
                       },
-                      /*(){
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
-                      },*/
-
                       child: Container(
                           padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
                           child: const Text('LOGIN')),

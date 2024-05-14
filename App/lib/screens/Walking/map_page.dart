@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:petcare/screens/Walking/camara.dart';
 import 'package:petcare/screens/data/animal.dart';
+import 'package:petcare/screens/home/home_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'dart:io';
@@ -64,7 +65,7 @@ class _MapPageState extends State<MapPage> {
             height: 80.0,
             point:
                 LatLng(currentLocation.latitude!, currentLocation.longitude!),
-            builder: (ctx) => Container(
+            child: Container(
               child: Icon(Icons.location_on, size: 40.0, color: Colors.red),
             ),
           ),
@@ -126,7 +127,7 @@ class _MapPageState extends State<MapPage> {
                 width: 80.0,
                 height: 80.0,
                 point: newLocation,
-                builder: (ctx) => Container(
+                child: Container(
                   child: Icon(Icons.location_on, size: 40.0, color: Colors.red),
                 ),
               ),
@@ -202,7 +203,7 @@ class _MapPageState extends State<MapPage> {
           width: 80.0,
           height: 80.0,
           point: newLocation,
-          builder: (ctx) => Container(
+          child: Container(
             child: Icon(Icons.location_on, size: 40.0, color: Colors.red),
           ),
         ),
@@ -254,7 +255,17 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      /*appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.brown.shade800,
+          ),
+          onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const HomeScreen())),
+        ),
+        backgroundColor: Colors.transparent,
+      ),*/
       body: Stack(children: [
         FlutterMap(
             mapController: _mapController,
@@ -348,6 +359,28 @@ class _MapPageState extends State<MapPage> {
                     ],
                   ),
                 ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 10,
+          left: 0,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromRGBO(93, 99, 209, 1),
+                foregroundColor: Colors.white,
+                shape: const CircleBorder()),
+            child: const Padding(
+              padding: EdgeInsets.all(5.0),
+              child: Icon(
+                Icons.arrow_back,
               ),
             ),
           ),

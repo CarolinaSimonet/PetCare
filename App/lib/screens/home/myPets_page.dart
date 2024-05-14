@@ -39,7 +39,6 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
     return Scaffold(
       extendBodyBehindAppBar: false,
       backgroundColor: const Color(0xfffafbfa),
-      bottomNavigationBar: const NavigationBarScreen(),
       appBar: GenericAppBar(
         title: "My Pets",
         icon: Icons.add_circle,

@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       extendBodyBehindAppBar: false,
       backgroundColor: const Color(0xfffafbfa),
-      bottomNavigationBar: const NavigationBarScreen(),
       appBar: GenericAppBar(
         title: "Pet Track",
         icon: Icons.add_circle,

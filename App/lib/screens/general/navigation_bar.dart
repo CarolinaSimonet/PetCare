@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:petcare/screens/Walking/ConfirmationRFID_page.dart';
 import 'package:petcare/screens/Walking/map_page.dart';
 
 import '../home/home_page.dart';
@@ -18,7 +19,7 @@ class _NavigationBarState extends State<NavigationBarScreen> {
   final List<Widget> _pages = [
     const HomeScreen(), // Home content
     const MyPetsScreen(),
-    MapPage(),
+    const ConfirmationRfid_page(),
     const Placeholder(),
     const Placeholder(), // Messages content
   ];
