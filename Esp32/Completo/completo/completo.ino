@@ -1,11 +1,17 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
+#include <SPI.h>
+#include <MFRC522.h>
 
 // Define the pins for the ultrasonic sensor
-const int trigPinBowl1 = 19;
+const int trigPinBowl1 = 22;
 const int echoPinBowl1 = 21;
+const int sensorPower = 33;
+const int sensorPin = 32;
 
+const int SS_PIN = 5;
+const int RST_PIN = 26;
 // Define sound speed in cm/uS
 #define SOUND_SPEED 0.034
 #define CM_TO_INCH 0.393701
@@ -25,8 +31,8 @@ bool signupOK = false;
 long duration;
 float distanceCm;
 float distanceInch;
-unsigned long lastSensorReadTime = 0; // Timing control
-unsigned long interval = 1000; // 1 second in milliseconds
+unsigned long lastSensorReadTime = 0;  // Timing control
+unsigned long interval = 1000;         // 1 second in milliseconds
 
 // Class for the bowl of each pet
 class SonicFoodBowl {
@@ -68,8 +74,102 @@ public:
   }
 };
 
+
+// Class for the water bowl of each pet
+class WaterBowl {
+
+private:
+  byte sensorPowerPin;
+  byte sensorPin;
+  byte id;
+  long val;
+
+public:
+  WaterBowl() {
+    //Default constructor
+  }
+
+  WaterBowl(byte sensorPowerPin, byte sensorPin, byte id) {
+    this->sensorPowerPin = sensorPowerPin;
+    this->sensorPin = sensorPin;
+    this->id = id;
+    val = 0;
+  }
+
+  void init() {
+    pinMode(sensorPowerPin, OUTPUT);
+    digitalWrite(sensorPowerPin, LOW);
+  }
+
+  long sense() {
+    digitalWrite(sensorPowerPin, HIGH);
+    delay(10);
+    val = analogRead(sensorPin);
+    digitalWrite(sensorPowerPin, LOW);
+    Serial.print("Water level: ");
+    Serial.println(val);
+    return val;
+  }
+};
+
+// Class for the RFID sensor
+class RfidSensor {
+private:
+  byte ss_pin;
+  byte rst_pin;
+  MFRC522 rfid;  // Instance of the MFRC522 class
+  MFRC522::MIFARE_Key key;
+
+public:
+  RfidSensor(byte ss_pin, byte rst_pin)
+    : ss_pin(ss_pin), rst_pin(rst_pin), rfid(ss_pin, rst_pin) {
+    // Constructor
+  }
+
+  void init() {
+    SPI.begin();      // Init SPI bus
+    rfid.PCD_Init();  // Init MFRC522
+
+    for (byte i = 0; i < 6; i++) {
+      key.keyByte[i] = 0xFF;
+    }
+
+    Serial.println(F("RFID sensor initialized."));
+  }
+
+  String readCard() {
+    String uidString = "";  // Initialize an empty string to store the UID
+
+    // Check if a new card is present
+    if (!rfid.PICC_IsNewCardPresent()) {
+      Serial.println("No card present.");
+      return uidString;  // Return an empty string if no card is present
+    }
+
+    // Read the card's serial number
+    if (!rfid.PICC_ReadCardSerial()) {
+      Serial.println("Error reading card.");
+      return uidString;  // Return an empty string if there's an error reading the card
+    }
+
+    // Process the card's data
+    Serial.print(F("UID: "));
+    for (byte i = 0; i < rfid.uid.size; i++) {
+      uidString += String(rfid.uid.uidByte[i], HEX);  // Append each byte of the UID to the string
+    }
+    Serial.println(uidString);
+
+    return uidString;  // Return the UID as a string
+  }
+};
+
+// Instantiate WaterBowl object
+WaterBowl wBowl1(sensorPower, sensorPin, 1);
+
 // Bowl instances
-SonicFoodBowl bowl1(trigPinBowl1, echoPinBowl1, 1);
+SonicFoodBowl fBowl1(trigPinBowl1, echoPinBowl1, 1);
+
+RfidSensor rfidSensor(SS_PIN, RST_PIN);
 
 void setup() {
   Serial.begin(115200);
@@ -81,6 +181,7 @@ void setup() {
     Serial.print(".");
     delay(300);
   }
+
   Serial.println();
   Serial.print("Connected with IP: ");
   Serial.println(WiFi.localIP());
@@ -102,7 +203,9 @@ void setup() {
   Firebase.reconnectWiFi(true);
 
   // Initialize bowl sensors
-  bowl1.init();
+  fBowl1.init();
+  wBowl1.init();
+  rfidSensor.init();
 }
 
 void loop() {
@@ -112,15 +215,32 @@ void loop() {
   if (currentMillis - lastSensorReadTime >= interval) {
     lastSensorReadTime = currentMillis;
 
-    long bowl1Distance = bowl1.sense();
+    long bowl1Distance = fBowl1.sense();
+    long wBowlLevel = wBowl1.sense();
+
+    String uid = rfidSensor.readCard();
+
+    // Check if the UID is not empty
+    if (!uid.isEmpty()) {
+      // Send the UID to Firebase
+      if (Firebase.ready() && signupOK) {
+        Firebase.RTDB.setString(&fbdo, "/rfid/uid", uid);
+      }
+    }
 
     Serial.print("Bowl1 Distance (cm): ");
     Serial.println(bowl1Distance);
 
     if (Firebase.ready() && signupOK) {
-      Firebase.RTDB.setFloat(&fbdo, "/bowl1/cm", bowl1Distance);
+      Firebase.RTDB.setFloat(&fbdo, "/fBowl1/cm", bowl1Distance);
+      Firebase.RTDB.setFloat(&fbdo, "/wBowl1", wBowlLevel);
+      Firebase.RTDB.setFloat(&fbdo, "/lastRfid", wBowlLevel);
     }
   }
+
+
+
+
 
   delay(1000);
 }
