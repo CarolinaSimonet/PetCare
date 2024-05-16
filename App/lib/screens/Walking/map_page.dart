@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:petcare/screens/Walking/camara.dart';
 import 'package:petcare/screens/data/animal.dart';
+import 'package:petcare/screens/data/firebase_functions.dart';
+import 'package:petcare/screens/general/navigation_bar.dart';
 import 'package:petcare/screens/home/home_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
@@ -12,6 +15,8 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 
 class MapPage extends StatefulWidget {
+  final String? imageUrl;
+  const MapPage({Key? key, this.imageUrl}) : super(key: key);
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -25,22 +30,26 @@ class _MapPageState extends State<MapPage> {
   List<LatLng> points = [];
   Timer? _timer;
   int _seconds = 0;
+
   String get _formattedTime =>
       '${(_seconds ~/ 3600).toString().padLeft(2, '0')}:${((_seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}';
 
   bool _isTracking = false;
-  List<CameraDescription>? cameras;
-  CameraController? _cameraController;
+
   Future<void>? _initializeCameraFuture;
   @override
   void dispose() {
-    _cameraController?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    if (widget.imageUrl != null) {
+      // If there's an imageUrl, you might want to do something with it
+      print("Received image URL: ${widget.imageUrl}");
+      // You can also display the image or use it in any other required logic
+    }
     _locationStream = _location.onLocationChanged;
     _location.requestPermission().then((granted) {
       if (granted != PermissionStatus.granted) {
@@ -88,7 +97,7 @@ class _MapPageState extends State<MapPage> {
             child: ListBody(
               children: animals
                   .map((animal) => ListTile(
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 5.0),
                         leading: CircleAvatar(
                           radius: 60, // Size of the circle
@@ -152,7 +161,8 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  void _showAlertDialog() {
+  void _showAlertDialog() async {
+    final cameras = await availableCameras();
     if (!mounted) return; // Ensure the context is still valid
     showDialog(
       context: context,
@@ -171,8 +181,7 @@ class _MapPageState extends State<MapPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const CameraWidget()),
+                        MaterialPageRoute(builder: (context) => CameraWidget()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -223,6 +232,16 @@ class _MapPageState extends State<MapPage> {
       } else {
         lastLocation = markers.last.point;
       }
+      addActivity(
+        imageUrl: 'http://example.com/image.jpg',
+        userId: FirebaseAuth
+            .instance.currentUser!.uid, // Assuming the user is logged in
+        description: 'Morning walk in the park',
+        date: DateTime.now(),
+        latitude: 37.422,
+        longitude: -122.084,
+      );
+
       points.clear();
       markers.clear();
       updateLocation(lastLocation);
@@ -255,17 +274,6 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /*appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.brown.shade800,
-          ),
-          onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const HomeScreen())),
-        ),
-        backgroundColor: Colors.transparent,
-      ),*/
       body: Stack(children: [
         FlutterMap(
             mapController: _mapController,
@@ -370,7 +378,8 @@ class _MapPageState extends State<MapPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const NavigationBarScreen()),
               );
             },
             style: ElevatedButton.styleFrom(

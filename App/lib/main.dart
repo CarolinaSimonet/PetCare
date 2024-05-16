@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/firebase_options.dart';
 import 'package:petcare/screens/Walking/ConfirmationRFID_page.dart';
-import 'package:petcare/screens/Walking/camara.dart';
+import 'package:petcare/screens/Walking/camaraExempleFlutter.dart';
 import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
 import 'package:petcare/screens/home/home_page.dart';
@@ -12,6 +12,7 @@ import 'package:petcare/screens/home/myPets_page.dart';
 import 'package:petcare/screens/welcome/login_page.dart';
 import 'package:petcare/screens/welcome/welcome_page.dart';
 import 'package:provider/provider.dart'; // Add this line
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   try {
@@ -19,7 +20,7 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-
+    FirebaseMessaging.instance.subscribeToTopic('alerts');
     print('Firebase initialized successfully');
   } catch (e) {
     print('Failed to initialize Firebase: $e');
@@ -63,13 +64,13 @@ class LandingPage extends StatelessWidget {
             print(user == null);
             if (user == null) {
               print('loading Login Screen ...');
-              return LoginScreen();
+              return const LoginScreen();
             } else {
               print('loading Home Screen ...');
-              return NavigationBarScreen();
+              return const NavigationBarScreen();
             }
           } else {
-            return WelcomeScreen();
+            return const WelcomeScreen();
           }
         });
   }
