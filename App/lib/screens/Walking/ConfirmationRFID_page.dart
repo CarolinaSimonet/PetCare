@@ -69,7 +69,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
                     padding: const EdgeInsets.only(
                         bottom: 40), // Adjust the padding as necessary
                     child: Image.asset(
-                      'images/walking.png', // Ensure the file name matches your asset path
+                      'assets/images/walking.png', // Ensure the file name matches your asset path
                       width: MediaQuery.of(context)
                           .size
                           .width, // Scales the image to 60% of the screen width

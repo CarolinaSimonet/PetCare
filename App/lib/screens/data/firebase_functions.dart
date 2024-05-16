@@ -65,19 +65,45 @@ class Auth {
   }
 }
 
-Future<void> saveImageMetadata(String imageUrl, String userId,
-    String activityId, DateTime dateTaken) async {
+Future<void> saveImageMetadata(
+    String imageUrl, String userId, DateTime dateTaken) async {
   try {
     print('Saving image metadata...');
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     await firestore.collection('images').add({
       'imageUrl': imageUrl,
       'userId': userId,
-      'activityId': activityId,
       'dateTaken': dateTaken,
     });
   } catch (e) {
     print('Error saving image metadata: $e');
+  }
+}
+
+Future<void> addActivity({
+  required String imageUrl,
+  required String userId,
+  String? description,
+  DateTime? date,
+  double? latitude,
+  double? longitude,
+}) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  try {
+    await firestore.collection('activities').add({
+      'imageUrl': imageUrl,
+      'userId': userId,
+      'description': description ?? 'No description provided.',
+      'date': date ?? DateTime.now(),
+      'location': GeoPoint(latitude ?? 0.0,
+          longitude ?? 0.0), // default to (0,0) if no location is provided
+      'createdAt': FieldValue.serverTimestamp(), // server-side timestamp
+    });
+    print("Activity successfully added!");
+  } catch (e) {
+    print("Error adding activity: $e");
+    throw Exception("Failed to add activity");
   }
 }
 
