@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'firebase_api.dart';
 import 'package:petcare/firebase_options.dart';
 import 'package:petcare/screens/Walking/ConfirmationRFID_page.dart';
 import 'package:petcare/screens/Walking/camaraExempleFlutter.dart';
@@ -11,24 +12,22 @@ import 'package:petcare/screens/home/home_page.dart';
 import 'package:petcare/screens/home/myPets_page.dart';
 import 'package:petcare/screens/welcome/login_page.dart';
 import 'package:petcare/screens/welcome/welcome_page.dart';
-import 'package:provider/provider.dart'; // Add this line
+import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+
 Future<void> main() async {
-  try {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    FirebaseMessaging.instance.subscribeToTopic('alerts');
-    print('Firebase initialized successfully');
-  } catch (e) {
-    print('Failed to initialize Firebase: $e');
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await FirebaseApi().initNotifications();
+  
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  
   @override
   Widget build(BuildContext context) {
     return Provider<FirebaseAuth>(

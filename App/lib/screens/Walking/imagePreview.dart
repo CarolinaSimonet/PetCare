@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
@@ -69,7 +70,7 @@ class ImagePreviewPage extends StatelessWidget {
                   },
                   child: Text('Submit'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
+                    // primary: Colors.green,
                   ),
                 ),
                 ElevatedButton(
@@ -79,7 +80,7 @@ class ImagePreviewPage extends StatelessWidget {
                   },
                   child: Text('Cancel'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
+                    // primary: Colors.red,
                   ),
                 ),
               ],
