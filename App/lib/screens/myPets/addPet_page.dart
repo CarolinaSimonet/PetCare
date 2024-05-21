@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../home/home_page.dart';
 import '../home/myPets_page.dart';
+import '../home/profile_page.dart';
 
 class AddPetScreen extends StatefulWidget {
   const AddPetScreen({Key? key}) : super(key: key);
@@ -45,7 +46,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
     const MyPetsScreen(),
     const ConfirmationRfid_page(),
     const Placeholder(),
-    const Placeholder(), // Messages content
+    const MyProfileScreen(), // Messages content
   ];
 
   @override
