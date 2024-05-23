@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:petcare/screens/Walking/ConfirmationRFID_page.dart';
-import 'package:petcare/screens/Walking/map_page.dart';
 
 import '../home/home_page.dart';
 import '../home/myPets_page.dart';
 
 class NavigationBarScreen extends StatefulWidget {
-  const NavigationBarScreen({Key? key}) : super(key: key);
+  const NavigationBarScreen({super.key});
 
   @override
   State<NavigationBarScreen> createState() => _NavigationBarState();

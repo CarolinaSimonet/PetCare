@@ -6,7 +6,7 @@ class GenericAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Route<Object?>? mpr;
   final List<Widget>? actions;
 
-  const GenericAppBar({Key? key, required this.title, this.icon, this.mpr,  this.actions}) : super(key: key);
+  const GenericAppBar({super.key, required this.title, this.icon, this.mpr,  this.actions});
 
   @override
   Widget build(BuildContext context) {

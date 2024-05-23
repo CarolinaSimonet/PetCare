@@ -23,11 +23,11 @@ class Auth {
       // Handle specific Firebase Auth errors here
 
       print(e.code);
-      throw e;
+      rethrow;
     } catch (e) {
       // Handle other errors, such as network issues
       print(e);
-      throw e;
+      rethrow;
     }
   }
 
@@ -50,11 +50,11 @@ class Auth {
     } on FirebaseAuthException catch (e) {
       // Handle specific Firebase Auth errors here
       print(e.code);
-      throw e;
+      rethrow;
     } catch (e) {
       // Handle other errors, such as network issues
       print(e);
-      throw e;
+      rethrow;
     }
 
     //await _firebaseAuth.signOut();

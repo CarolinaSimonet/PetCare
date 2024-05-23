@@ -1,10 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/firebase_options.dart';
-import 'package:petcare/screens/Walking/ConfirmationRFID_page.dart';
-import 'package:petcare/screens/Walking/camaraExempleFlutter.dart';
 import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
 import 'package:petcare/screens/home/home_page.dart';
@@ -25,10 +22,12 @@ Future<void> main() async {
   } catch (e) {
     print('Failed to initialize Firebase: $e');
   }
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Provider<FirebaseAuth>(
@@ -36,10 +35,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         initialRoute: '/',
         routes: {
-          '/': (context) => LandingPage(),
-          '/home': (context) => HomeScreen(),
-          '/mypets': (context) => MyPetsScreen(),
-          '/walkingwithmypet': (context) => MapPage(),
+          '/': (context) => const LandingPage(),
+          '/home': (context) => const HomeScreen(),
+          '/mypets': (context) => const MyPetsScreen(),
+          '/walkingwithmypet': (context) => const MapPage(),
           //'/settings': (context) => SettingsScreen(),
         },
         debugShowCheckedModeBanner: false,
@@ -49,7 +48,7 @@ class MyApp extends StatelessWidget {
 }
 
 class LandingPage extends StatelessWidget {
-  const LandingPage();
+  const LandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {

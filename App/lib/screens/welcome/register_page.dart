@@ -4,7 +4,7 @@ import 'package:petcare/screens/data/firebase_functions.dart';
 import 'package:petcare/widget_tree.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -43,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => WidgetTree()),
+        MaterialPageRoute(builder: (context) => const WidgetTree()),
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -264,9 +264,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               Container(
                 margin: const EdgeInsets.only(left: 10, right: 10),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: const [
+                  children: [
                     CheckboxButton(),
                     Text(
                       'I agree to the Terms and Conditions',

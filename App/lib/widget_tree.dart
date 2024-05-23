@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petcare/screens/welcome/welcome_page.dart';
 import 'package:petcare/screens/home/home_page.dart';
 
 class WidgetTree extends StatefulWidget {
+  const WidgetTree({super.key});
+
   @override
   _WidgetTreeState createState() => _WidgetTreeState();
 }
@@ -21,15 +22,15 @@ class _WidgetTreeState extends State<WidgetTree> {
 
           // If the user is null, they are not logged in
           if (user == null) {
-            return WelcomeScreen(); // Redirect to the welcome page
+            return const WelcomeScreen(); // Redirect to the welcome page
           }
 
           // The user is logged in, send them to the home page
-          return HomeScreen();
+          return const HomeScreen();
         }
 
         // Waiting for connection to Firebase
-        return Scaffold(
+        return const Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
           ),

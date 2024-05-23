@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:petcare/screens/general/navigation_bar.dart';
 
 import '../../utils/data_classes.dart';
 import '../../utils/factory.dart';
@@ -11,7 +10,7 @@ import '../myPets/addPet_page.dart';
 import '../welcome/welcome_page.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

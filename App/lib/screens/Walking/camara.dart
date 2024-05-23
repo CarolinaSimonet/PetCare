@@ -1,14 +1,10 @@
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'dart:convert';
 import 'dart:async';
-import 'package:http/http.dart' as http;
 import 'package:petcare/screens/Walking/imagePreview.dart';
-import 'package:petcare/screens/data/firebase_functions.dart';
 
 class CameraWidget extends StatefulWidget {
   const CameraWidget({super.key});
@@ -164,7 +160,7 @@ class _CameraWidgetState extends State<CameraWidget> {
   @override
   Widget build(BuildContext context) {
     if (_controller == null || !_controller!.value.isInitialized) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     return Scaffold(
@@ -174,9 +170,9 @@ class _CameraWidgetState extends State<CameraWidget> {
           Expanded(
             child: _controller != null && _controller!.value.isInitialized
                 ? CameraPreview(_controller!)
-                : Center(child: CircularProgressIndicator()),
+                : const Center(child: CircularProgressIndicator()),
           ),
-          SizedBox(height: 120),
+          const SizedBox(height: 120),
           Padding(
             padding: const EdgeInsets.only(top: 10.0, bottom: 30),
             child: Row(
@@ -190,9 +186,9 @@ class _CameraWidgetState extends State<CameraWidget> {
                       backgroundColor: const Color.fromRGBO(93, 99, 209, 1),
                       foregroundColor: Colors.white,
                       shape: const CircleBorder()),
-                  child: Icon(Icons.camera_alt),
+                  child: const Icon(Icons.camera_alt),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
               ],
             ),
           ),

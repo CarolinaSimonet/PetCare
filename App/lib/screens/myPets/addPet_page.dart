@@ -4,7 +4,7 @@ import 'package:petcare/screens/general/navigation_bar.dart';
 import '../general/generic_app_bar.dart';
 
 class AddPetScreen extends StatefulWidget {
-  const AddPetScreen({Key? key}) : super(key: key);
+  const AddPetScreen({super.key});
 
   @override
   State<AddPetScreen> createState() => _AddPetScreenState();
@@ -63,7 +63,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
+                      SizedBox(
                         width: 141.69,
                         height: 129.25,
                         child: Stack(
@@ -75,16 +75,16 @@ class _AddPetScreenState extends State<AddPetScreen> {
                                 width: 141.69,
                                 height: 129.25,
                                 decoration: ShapeDecoration(
-                                  color: Color(0xFFF6F6F6),
+                                  color: const Color(0xFFF6F6F6),
                                   shape: RoundedRectangleBorder(
-                                    side: BorderSide(
+                                    side: const BorderSide(
                                         width: 1, color: Color(0xFFE7E7E7)),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
                               ),
                             ),
-                            Positioned(
+                            const Positioned(
                               left: 20.91,
                               top: 53.56,
                               child: SizedBox(
@@ -238,9 +238,9 @@ class _AddPetScreenState extends State<AddPetScreen> {
                       ),
                       Container(
                         margin: const EdgeInsets.only(left: 10, right: 10),
-                        child: Row(
+                        child: const Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
+                          children: [
                             CheckboxButton(),
                             Text(
                               'I agree to the Terms and Conditions',

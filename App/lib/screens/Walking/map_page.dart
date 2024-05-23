@@ -10,13 +10,11 @@ import 'package:petcare/screens/general/navigation_bar.dart';
 import 'package:petcare/screens/home/home_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:camera/camera.dart';
-import 'package:path_provider/path_provider.dart';
 
 class MapPage extends StatefulWidget {
   final String? imageUrl;
-  const MapPage({Key? key, this.imageUrl}) : super(key: key);
+  const MapPage({super.key, this.imageUrl});
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -75,7 +73,7 @@ class _MapPageState extends State<MapPage> {
             point:
                 LatLng(currentLocation.latitude!, currentLocation.longitude!),
             child: Container(
-              child: Icon(Icons.location_on, size: 40.0, color: Colors.red),
+              child: const Icon(Icons.location_on, size: 40.0, color: Colors.red),
             ),
           ),
         ];
@@ -91,7 +89,7 @@ class _MapPageState extends State<MapPage> {
       barrierDismissible: false, // User must tap a button!
       builder: (BuildContext context) {
         return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           title: const Text(' Com que vais passear ?'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -137,14 +135,14 @@ class _MapPageState extends State<MapPage> {
                 height: 80.0,
                 point: newLocation,
                 child: Container(
-                  child: Icon(Icons.location_on, size: 40.0, color: Colors.red),
+                  child: const Icon(Icons.location_on, size: 40.0, color: Colors.red),
                 ),
               ),
             ];
           }
           _mapController.move(newLocation, 18.0);
         });
-        _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+        _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
           setState(() {
             _seconds++;
           });
@@ -170,18 +168,18 @@ class _MapPageState extends State<MapPage> {
           true, // Prevents closing the dialog by tapping outside it.
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Center(child: Text('Tempo do DogReal')),
+          title: const Center(child: Text('Tempo do DogReal')),
           actions: <Widget>[
             Center(
               child: Column(
                 children: [
-                  Text('Memorize este momento'),
-                  SizedBox(height: 40),
+                  const Text('Memorize este momento'),
+                  const SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CameraWidget()),
+                        MaterialPageRoute(builder: (context) => const CameraWidget()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -213,7 +211,7 @@ class _MapPageState extends State<MapPage> {
           height: 80.0,
           point: newLocation,
           child: Container(
-            child: Icon(Icons.location_on, size: 40.0, color: Colors.red),
+            child: const Icon(Icons.location_on, size: 40.0, color: Colors.red),
           ),
         ),
       ];
@@ -232,20 +230,12 @@ class _MapPageState extends State<MapPage> {
       } else {
         lastLocation = markers.last.point;
       }
-      addActivity(
-        imageUrl: 'http://example.com/image.jpg',
-        userId: FirebaseAuth
-            .instance.currentUser!.uid, // Assuming the user is logged in
-        description: 'Morning walk in the park',
-        date: DateTime.now(),
-        latitude: 37.422,
-        longitude: -122.084,
-      );
+      _finalizeAlertDialog();
 
       points.clear();
       markers.clear();
       updateLocation(lastLocation);
-      _finalizeAlertDialog();
+
       // Reset timer
     });
   }
@@ -255,15 +245,40 @@ class _MapPageState extends State<MapPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Terminar'),
-          content: Text('Tem a certeza que pertende terminar o seu passeio'),
+          title: const Text('Terminar'),
+          content: const Text('Tem a certeza que pertende terminar o seu passeio'),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.cancel_outlined),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                // Implement your camera functionality here
-              },
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.check_circle_outline),
+                  onPressed: () {
+                    // Close the dialog
+                    // Implement your camera functionality here
+                    addActivity(
+                      imageUrl: widget.imageUrl ?? "",
+                      userId: FirebaseAuth.instance.currentUser!
+                          .uid, // Assuming the user is logged in
+                      description: 'Morning walk in the park',
+                      date: DateTime.now(),
+                      latitude: 37.422,
+                      longitude: -122.084,
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeScreen()),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.cancel_outlined),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    // Implement your camera functionality here
+                  },
+                ),
+              ],
             ),
           ],
         );
@@ -277,14 +292,14 @@ class _MapPageState extends State<MapPage> {
       body: Stack(children: [
         FlutterMap(
             mapController: _mapController,
-            options: MapOptions(
+            options: const MapOptions(
                 center: LatLng(51.5, -0.09), // Default center
                 zoom: 18.0,
                 maxZoom: 18.0),
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: ['a', 'b', 'c'],
+                subdomains: const ['a', 'b', 'c'],
                 userAgentPackageName: 'com.example.app',
               ),
               RichAttributionWidget(attributions: [
@@ -323,7 +338,7 @@ class _MapPageState extends State<MapPage> {
                             backgroundColor:
                                 const Color.fromRGBO(93, 99, 209, 1),
                             foregroundColor: Colors.white,
-                            shape: CircleBorder()),
+                            shape: const CircleBorder()),
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Icon(

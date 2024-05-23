@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:petcare/screens/Walking/map_page.dart';
-import 'package:petcare/screens/general/generic_app_bar.dart';
 
 class ConfirmationRfid_page extends StatefulWidget {
   const ConfirmationRfid_page({super.key});
@@ -17,12 +16,12 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
   void initState() {
     super.initState();
     // Initialize the timer to navigate after 20 seconds
-    _timer = Timer(Duration(seconds: 3), () {
+    _timer = Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                MapPage()), // Assuming you have a MapPage to navigate to
+                const MapPage()), // Assuming you have a MapPage to navigate to
       );
     });
   }
@@ -77,7 +76,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
                           .contain, // Makes sure the entire image is shown, adjust this to fit your design needs
                     ),
                   ),
-                  Text(
+                  const Text(
                     'Antes de começar o passeio',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -87,8 +86,8 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 110),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 110),
                     child: Text(
                       'Usa o teu RFID Card',
                       textAlign: TextAlign.center,

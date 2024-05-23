@@ -2,14 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:petcare/screens/Walking/camaraExempleFlutter.dart';
-import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/data/firebase_functions.dart';
 
 class ImagePreviewPage extends StatelessWidget {
   final Uint8List imageBytes;
 
-  ImagePreviewPage({Key? key, required this.imageBytes}) : super(key: key);
+  const ImagePreviewPage({super.key, required this.imageBytes});
+
   Future<void> _submitPicture(context) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
@@ -28,12 +27,15 @@ class ImagePreviewPage extends StatelessWidget {
       final String imageUrl = await ref.getDownloadURL();
       print('Image uploaded. URL: $imageUrl');
       await saveImageMetadata(imageUrl, userId, DateTime.now());
-      Navigator.push(
+      /*Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => MapPage(),
+          builder: (context) => MapPage(imageUrl: imageUrl),
         ),
-      );
+      );*/
+      Navigator.of(context).pop();
+      Navigator.pop(context, imageUrl);
+      //Navigator.pop(context);
     } catch (e) {
       print('Failed to upload image: $e');
     }
@@ -49,7 +51,7 @@ class ImagePreviewPage extends StatelessWidget {
               imageBytes,
               fit: BoxFit.cover,
               width: double.infinity,
-              errorBuilder: (context, error, stackTrace) => Center(
+              errorBuilder: (context, error, stackTrace) => const Center(
                 child: Text('Unable to load image',
                     style: TextStyle(color: Colors.red)),
               ),
@@ -67,20 +69,21 @@ class ImagePreviewPage extends StatelessWidget {
                     _submitPicture(context);
                     print('Submit');
                   },
-                  child: Text('Submit'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
+                    backgroundColor: Colors.green,
                   ),
+                  child: const Text('Submit'),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     // Implement cancel logic here
+                    Navigator.of(context).pop();
                     print('Cancel');
                   },
-                  child: Text('Cancel'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
+                    backgroundColor: Colors.red,
                   ),
+                  child: const Text('Cancel'),
                 ),
               ],
             ),
