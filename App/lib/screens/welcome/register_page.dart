@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/screens/data/firebase_functions.dart';
-import 'package:petcare/widget_tree.dart';
+import 'package:petcare/main.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -43,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const WidgetTree()),
+        MaterialPageRoute(builder: (context) => LandingPage()),
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

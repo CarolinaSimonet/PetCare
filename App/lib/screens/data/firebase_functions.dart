@@ -39,14 +39,18 @@ class Auth {
         email: email,
         password: password,
       );
-      String userId = userCredential.user!.uid;
+      if (user != null) {
+        String userId = userCredential.user!.uid;
 
-      // Set user data in Firestore
-      await _firestore.collection('users').doc(userId).set({
-        'name': username,
-        'email': email,
-        'role': 'patient', // Default role for self-registration
-      });
+        // Set user data in Firestore
+        await _firestore.collection('users').doc(userId).set({
+          'name': username,
+          'email': email,
+          // Default role for self-registration
+        });
+      } else {
+        print("user is null");
+      }
     } on FirebaseAuthException catch (e) {
       // Handle specific Firebase Auth errors here
       print(e.code);
@@ -117,8 +121,14 @@ class AuthService {
 
   Future<String> getCurrentUserRole() async {
     final User? user = _firebaseAuth.currentUser;
-    DocumentSnapshot userData =
-        await _firestore.collection('users').doc(user!.uid).get();
-    return userData['role']; // This will be null if no user is logged in
+    if (user != null) {
+      DocumentSnapshot userData =
+          await _firestore.collection('users').doc(user!.uid).get();
+      return userData['role'];
+    } else {
+      print('error :user null');
+      return '';
+    }
+    // This will be null if no user is logged in
   }
 }

@@ -4,8 +4,7 @@ import 'package:petcare/screens/general/navigation_bar.dart';
 
 import '../Walking/ConfirmationRFID_page.dart';
 import '../general/generic_app_bar.dart';
-import 'package:image_picker/image_picker.dart';
-
+//import 'package:image_picker/image_picker.dart';
 import '../home/home_page.dart';
 import '../home/myPets_page.dart';
 import '../home/profile_page.dart';
@@ -142,7 +141,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                                       child: TextButton(
                                         // Wrap with TextButton for button functionality
                                         onPressed: () async {
-                                          final picker = ImagePicker();
+                                          /*final picker = ImagePicker();
                                           final imageFile =
                                               await picker.pickImage(
                                                   source: ImageSource.gallery);
@@ -156,7 +155,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                                                 'Image selected: ${imageFile.path}');
                                           } else {
                                             print('Image selection cancelled.');
-                                          }
+                                          }*/
                                         },
                                         child: Container(
                                           width: 141.69,

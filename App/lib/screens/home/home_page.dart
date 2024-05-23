@@ -55,18 +55,22 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       extendBodyBehindAppBar: false,
       backgroundColor: const Color(0xfffafbfa),
-      appBar: GenericAppBar(
-        title: "Pet Track",
-        icon: Icons.add_circle,
-        mpr: MaterialPageRoute(builder: (context) => const AddPetScreen()),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.settings, size: 40, color: Colors.brown.shade800),
-            onPressed: () {
-              // Add your onPressed logic here
-            },
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 8.0, left: 0.0),
+          child: Text(
+            'Pet Home',
+            style: TextStyle(
+              //color: Color(0xff55432f),
+              color: Colors.brown.shade800,
+              fontSize: 36,
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Rowdies',
+            ),
           ),
-        ],
+        ),
       ),
       body: Column(
         children: [

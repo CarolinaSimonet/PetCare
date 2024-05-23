@@ -12,9 +12,6 @@ import 'package:petcare/screens/welcome/welcome_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
-
 Future<void> main() async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +64,7 @@ class LandingPage extends StatelessWidget {
             print(user == null);
             if (user == null) {
               print('loading Login Screen ...');
-              return const LoginScreen();
+              return const WelcomeScreen();
             } else {
               print('loading Home Screen ...');
               return const NavigationBarScreen();
