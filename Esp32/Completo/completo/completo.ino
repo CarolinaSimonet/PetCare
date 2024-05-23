@@ -10,6 +10,8 @@ const int echoPinBowl1 = 21;
 const int sensorPower = 33;
 const int sensorPin = 32;
 
+const int ledPin = 4;
+
 const int SS_PIN = 5;
 const int RST_PIN = 26;
 // Define sound speed in cm/uS
@@ -20,7 +22,7 @@ const int RST_PIN = 26;
 #define WIFI_SSID "s22ujoao"
 #define WIFI_PASSWORD "pila1231234"
 #define API_KEY "AIzaSyAH2PKK19WBHAN19PZnL5NSG3N3uO4KZ6E"
-#define DATABASE_URL " http://127.0.0.1:9000/?ns=scmu-10efc"
+#define DATABASE_URL "https://scmu-10efc-default-rtdb.europe-west1.firebasedatabase.app/"  // Replace with your actual Firebase project URL
 
 // Firebase objects
 FirebaseData fbdo;
@@ -33,6 +35,9 @@ float distanceCm;
 float distanceInch;
 unsigned long lastSensorReadTime = 0;  // Timing control
 unsigned long interval = 1000;         // 1 second in milliseconds
+
+
+bool ledState = false;
 
 // Class for the bowl of each pet
 class SonicFoodBowl {
@@ -73,7 +78,6 @@ public:
     return distanceCm;
   }
 };
-
 
 // Class for the water bowl of each pet
 class WaterBowl {
@@ -174,6 +178,8 @@ RfidSensor rfidSensor(SS_PIN, RST_PIN);
 void setup() {
   Serial.begin(115200);
 
+  pinMode(ledPin, OUTPUT);
+
   // Connect to Wi-Fi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to Wi-Fi");
@@ -211,12 +217,56 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
+
+  long bowl1Distance = fBowl1.sense();
+  long wBowlLevel = wBowl1.sense();
+
+  
+  
+
+  // Check fire status
+  if (Firebase.ready() && signupOK) {
+    if (Firebase.RTDB.getInt(&fbdo, "/fireStatus")) {
+      int fireStatus = fbdo.intData();
+      Serial.println(fireStatus);
+
+
+
+
+
+      if (fireStatus == 1) {
+        ledState = true;
+        Serial.println("Fire detected");
+        bowl1Distance = fBowl1.sense();
+        digitalWrite(ledPin, HIGH);
+
+        if (wBowlLevel >= 1700) {
+
+          Serial.println('turn of');
+          digitalWrite(ledPin, LOW);
+          Serial.println('turned of');
+          Firebase.RTDB.setInt(&fbdo, "/fireStatus", 0);
+          
+        }
+
+
+      } else if (fireStatus == 0) {
+        Serial.println("No fire detected");
+        digitalWrite(ledPin, LOW);
+      } else {
+        Serial.println("Error reading fire status");
+      }
+    } else {
+      Serial.printf("Error getting fire status: %s\n", fbdo.errorReason().c_str());
+    }
+  }
+
   // Check if the current time is greater than the last read time plus the interval
   if (currentMillis - lastSensorReadTime >= interval) {
     lastSensorReadTime = currentMillis;
 
-    long bowl1Distance = fBowl1.sense();
-    long wBowlLevel = wBowl1.sense();
+    bowl1Distance = fBowl1.sense();
+    wBowlLevel = wBowl1.sense();
 
     String uid = rfidSensor.readCard();
 
@@ -238,9 +288,5 @@ void loop() {
     }
   }
 
-
-
-
-
-  delay(1000);
+ 
 }
