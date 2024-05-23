@@ -4,6 +4,7 @@ import 'package:petcare/screens/Walking/ConfirmationRFID_page.dart';
 
 import '../home/home_page.dart';
 import '../home/myPets_page.dart';
+import '../home/profile_page.dart';
 
 class NavigationBarScreen extends StatefulWidget {
   const NavigationBarScreen({super.key});
@@ -20,7 +21,7 @@ class _NavigationBarState extends State<NavigationBarScreen> {
     const MyPetsScreen(),
     const ConfirmationRfid_page(),
     const Placeholder(),
-    const Placeholder(), // Messages content
+    const MyProfileScreen(),
   ];
 
   @override
