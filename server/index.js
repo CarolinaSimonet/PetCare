@@ -24,43 +24,67 @@ const db = admin.database();
 const dbFS = admin.firestore();
 
 console.log("Database initialized");
-
 // Function to check data and send alerts
-// async function checkDataAndSendAlert() {
-//   try {
-//     const snapshot = await db.ref("/fBowl1/cm").once("value");
-//     const data = snapshot.val();
-//     console.log("Data read successfully:", data);
 
-//     if (data > 10) {
-//       // Replace 'threshold' with your specific condition
-//       console.log("Warning: Condition met!");
+let lastEmptyTime = null;
 
-//       // Update the database to log the alert or send a notification
-//       const alertRef = db.ref("/alerts");
-//       await alertRef.push({
-//         message: "Condition met!",
-//         timestamp: admin.database.ServerValue.TIMESTAMP,
-//       });
 
-//       // Optional: Send a notification to Firebase Cloud Messaging (FCM)
-//       const message = {
-//         notification: {
-//           title: "Alert",
-//           body: "Condition met!",
-//         },
-//         topic: "alerts",
-//       };
+async function checkDataAndSendAlert() {
+  try {
+    const snapshot = await db.ref("/fBowl1/cm").once("value");
+    const data = snapshot.val();
+    console.log("Data read successfully:", data);
 
-//       await admin.messaging().send(message);
-//       console.log("Notification sent successfully");
-//     } else {
-//       console.log("Condition not met");
-//     }
-//   } catch (error) {
-//     console.error("Error reading data:", error);
-//   }
-// }
+    if (data >= 50) { // Empty bowl condition
+      if (lastEmptyTime === null) {
+        lastEmptyTime = Date.now();
+      } else {
+        const elapsedTime = Date.now() - lastEmptyTime;
+        if (elapsedTime >= 30000) { // 30 seconds have passed
+          console.log("Warning: Food bowl empty for 30 seconds!");
+          sendNotification();
+          // ... (send notification logic)
+          lastEmptyTime = null; // Reset timer after sending the notification
+        }
+      }
+    } else {
+      lastEmptyTime = null; // Reset timer if bowl is refilled
+    }
+  } catch (error) {
+    console.error("Error reading data:", error);
+  }
+}
+
+async function sendNotificationToAllUsers(message) {
+  try {
+    const usersSnapshot = await dbFS.collection("users").get();
+    const notificationPromises = [];
+
+    usersSnapshot.forEach((doc) => {
+      const userData = doc.data();
+      const fcmToken = userData.fcmToken;
+
+      if (fcmToken) {
+        const notificationMessage = {
+          data: {
+            title: "Food Bowl Alert",
+            body: message,
+          },
+          token: fcmToken,
+        };
+
+        notificationPromises.push(admin.messaging().send(notificationMessage));
+      } else {
+        console.warn(`FCM token not found for user ${doc.id}`);
+      }
+    });
+
+    await Promise.all(notificationPromises);
+    console.log("Notifications sent successfully");
+  } catch (error) {
+    console.error("Error sending notifications:", error);
+  }
+} 
 
 async function turnLedOn() {
   console.log("LED turned on");
@@ -159,7 +183,7 @@ app.get("/assignRFID", async (req, res) => {
 
 
       // await admin.messaging().send(message);
-      
+
       return res.status(200).send({ message: `RFID ${rfidRT} assigned to user ${userId}` });
 
     } else { // Timeout or error occurred
@@ -186,6 +210,7 @@ app.get("/assignRFID", async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
+
 
 
 // ... your other imports ...

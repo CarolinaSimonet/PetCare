@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:petcare/screens/general/navigation_bar.dart';
 
 import '../general/generic_app_bar.dart';
 import '../data/firebase_functions.dart';
@@ -75,170 +77,133 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Widget myInfo(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(20),
-      width: MediaQuery.of(context).size.width * 0.9,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(left: 20, top: 20),
-              child: Text(
-                'My Info',
-                style: TextStyle(
-                    fontFamily: 'Rowdies',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Colors.brown.shade800),
-              ),
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+
+          return Container(
+            margin: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width * 0.9,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Name:',
-                        style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.brown.shade800),
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width / 2,
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.brown.shade800),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              'Michael Scott',
-                              style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 18,
-                                  color: Colors.brown.shade800,
-                                  overflow: TextOverflow.ellipsis),
-                            ),
-                          ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.edit,
-                                color: Colors.brown.shade800,
-                              ))
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Email:',
-                        style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.brown.shade800),
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width / 2,
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.brown.shade800),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              'michaelscott@gmail.com',
-                              style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 18,
-                                  color: Colors.brown.shade800,
-                                  overflow: TextOverflow.ellipsis),
-                            ),
-                          ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.edit,
-                                color: Colors.brown.shade800,
-                              ))
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Phone:',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.brown.shade800,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width / 2,
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.brown.shade800),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Text(
-                              '+351 924763521',
-                              style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 18,
-                                  color: Colors.brown.shade800,
-                                  overflow: TextOverflow.ellipsis),
-                            ),
-                          ),
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.edit,
-                                color: Colors.brown.shade800,
-                              ))
-                        ],
-                      ),
-                    ],
-                  ),
+                  _buildInfoRow(context, 'Name', data['name'] ?? '', data),
+                  const SizedBox(height: 10),
+                  _buildInfoRow(context, 'Email', data['email'] ?? '', data),
                 ],
               ),
             ),
+          );
+        }
+        return const CircularProgressIndicator(); // Show a loading indicator while fetching
+      },
+    );
+  }
+
+  Widget _buildInfoRow(BuildContext context, String label, String value,
+      Map<String, dynamic> data) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '$label:',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.brown.shade800,
+          ),
+        ),
+        Row(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width / 2,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.brown.shade800),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 18,
+                  color: Colors.brown.shade800,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.edit, color: Colors.brown.shade800),
+              onPressed: () async {
+                final newName = await showDialog<String>(
+                  context: context,
+                  builder: (context) => _buildEditDialog(
+                      context, label, data[label.toLowerCase()] ?? ''),
+                );
+
+                if (newName != null) {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .update({label.toLowerCase(): newName});
+                  // Update your widget state here to trigger a rebuild
+                }
+              },
+              // ... (rest of the IconButton code)
+            )
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _buildEditDialog(
+      BuildContext context, String label, String currentValue) {
+    TextEditingController controller =
+        TextEditingController(text: currentValue);
+    return AlertDialog(
+      title: Text('Edit $label'),
+      content: TextField(
+        controller: controller,
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, controller.text);
+            Navigator.pushReplacement(context, 
+            MaterialPageRoute(builder: (context) => NavigationBarScreen()));
+          },
+          child: Text('Save'),
+        ),
+      ],
     );
   }
 
@@ -474,8 +439,7 @@ Widget ConnectRfid(BuildContext context) {
                 context,
                 MaterialPageRoute(builder: (context) => ConfigRfid_page()),
               );
-          // Assuming you have a MapPage to navigate to
-      
+              // Assuming you have a MapPage to navigate to
             },
             child: const Text('Connect'),
           ),

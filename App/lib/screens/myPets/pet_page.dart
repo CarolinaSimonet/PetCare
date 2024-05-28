@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:ffi';
+import 'dart:math';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/screens/data/server_data.dart';
 import '../../utils/data_classes.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_database/firebase_database.dart';
 
 class PetDetailsPage extends StatefulWidget {
   final MyPet pet;
@@ -15,41 +19,73 @@ class PetDetailsPage extends StatefulWidget {
 }
 
 class _PetDetailsPageState extends State<PetDetailsPage> {
+  final DatabaseReference _database =
+      FirebaseDatabase.instance.ref(); // Get a reference to your database
+
   int waterLevel = -1;
   int foodLevel = -1;
   bool isLoading = true;
+  late double waterLevelPercentage;
   late MyPet pet;
+
   @override
   void initState() {
     super.initState();
-    _fetchBowlLevels();
+    _listenToBowlLevels();
     pet = widget.pet;
+  }
+
+  @override
+  void dispose() {
+    // Detach listeners when the widget is disposed
+    _database.child('wBowl1/cm').onValue.listen((event) {}).cancel();
+    _database.child('fBowl1/cm').onValue.listen((event) {}).cancel();
+    super.dispose();
+  }
+
+  void _listenToBowlLevels() {
+    _database.child('wBowl1').onValue.listen((event) {
+      final data = event.snapshot.value;
+      setState(() {
+        if (data is int) {
+          // Check if data is an integer
+          waterLevel = data;
+          waterLevelPercentage = (waterLevel - 150) * 100 / 50;
+        } else if (data != null) {
+          // Check if data is not null before parsing
+          waterLevel = int.tryParse(data.toString()) ??
+              0; // Attempt to parse or default to 0
+
+          waterLevelPercentage = (waterLevel - 150) * 100 / 50;
+        } else {
+          waterLevel = 0; // Set to 0 if data is null
+          waterLevelPercentage = 0;
+        }
+      });
+    });
+
+    _database.child('fBowl1').onValue.listen((event) {
+      final data = event.snapshot.value;
+      setState(() {
+        if (data is int) {
+          foodLevel = data;
+        } else if (data != null) {
+          foodLevel = int.tryParse(data.toString()) ?? 0;
+        } else {
+          foodLevel = 0;
+        }
+      });
+
+      print(foodLevel);
+      isLoading = false;
+    });
   }
 
   Future<void> _fetchBowlLevels() async {
     try {
-      final waterResponse =
-          await http.get(Uri.parse('$SERVER_URL/getWaterBowl'));
-      final foodResponse = await http.get(Uri.parse('$SERVER_URL/getFoodBowl'));
-
-      if (waterResponse.statusCode == 200 && foodResponse.statusCode == 200) {
-        final waterData = jsonDecode(waterResponse.body);
-        final foodData = jsonDecode(foodResponse.body);
-
-        print('Water data: $waterData');
-        int food = foodData['cm'];
-        print('Food data: $foodData');
-
-        setState(() {
-          waterLevel =
-              waterData['cm'] ?? 0; // Adjust based on your data structure
-          foodLevel = foodData['cm'] ?? 0;
-          isLoading = false;
-        });
-      } else {
-        // Handle errors (e.g., show a snackbar or retry)
-        print('Failed to fetch bowl levels');
-      }
+      print('Water data: $waterLevel');
+      int food = foodLevel;
+      print('Food data: $foodLevel');
     } catch (e) {
       // Handle network or other errors
       print('Error fetching bowl levels: $e');
@@ -99,20 +135,15 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
               ),
             ),
             const SizedBox(width: 10),
-            Expanded(
-              child:
-                  _buildSmallCard('Breed', pet.breed ?? 'Unknown', Icons.pets),
-            ),
-            const SizedBox(width: 10),
             Row(
               children: [
                 Expanded(
                   child: _buildBowlCard(
-                      'Water bowl', waterLevel, Icons.local_drink),
+                      'Water bowl', waterLevelPercentage, Icons.local_drink),
                 ),
                 Expanded(
-                  child:
-                      _buildBowlCard('Food bowl', foodLevel, Icons.food_bank),
+                  child: _buildBowlCardFood(
+                      'Food bowl', foodLevel, Icons.food_bank),
                 ),
               ],
             ),
@@ -122,7 +153,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
     );
   }
 
-  Widget _buildBowlCard(String title, int level, IconData icon) {
+  Widget _buildBowlCard(String title, double level, IconData icon) {
     return Card(
       elevation: 3,
       child: Padding(
@@ -139,13 +170,24 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 width: 10,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            else if (level >= 0)
+            else if (level > 0)
               Column(
                 // Visual representation for valid levels (0-100)
                 children: [
                   Text('$level%'),
                   LinearProgressIndicator(
                     value: level / 100,
+                    minHeight: 8,
+                  ),
+                ],
+              )
+            else if (level < 0)
+              Column(
+                // Visual representation for valid levels (0-100)
+                children: [
+                  Text('0%'),
+                  LinearProgressIndicator(
+                    value: 0,
                     minHeight: 8,
                   ),
                 ],
@@ -157,6 +199,84 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       ),
     );
   }
+
+  Widget _buildBowlCardFood(String title, int level, IconData icon) {
+    return Card(
+      elevation: 3,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 5),
+            Icon(icon, size: 40),
+            const SizedBox(height: 5),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+            if (level < 50)
+              SizedBox(
+                child: Text(
+                  'Has food',
+                  style: TextStyle(color: Color.fromARGB(255, 130, 177, 131)),
+                ),
+              )
+            else if (level > 50)
+              SizedBox(
+                child: Text(
+                  'Empty',
+                  style: TextStyle(color: Color.fromARGB(255, 161, 113, 113)),
+                ),
+              )
+            else
+              Text('Error'),
+
+            const SizedBox(height: 5),
+            // Handle unexpected level values (e.g., negative)
+            ElevatedButton(
+              onPressed: _onPress, child: Text('Refill'), //make it purple
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Color.fromARGB(255, 110, 100, 138),
+                disabledForegroundColor: Colors.grey.withOpacity(0.38),
+                disabledBackgroundColor: Colors.grey.withOpacity(0.12),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onPress() {
+    if (foodLevel > 0) {
+      // Show confirmation dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Confirmation"),
+            content: const Text("The food bowl still has food. "),
+            actions: <Widget>[
+              ElevatedButton(
+                child: const Text("ok"),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Color.fromARGB(255, 110, 100, 138),
+                  disabledForegroundColor: Colors.grey.withOpacity(0.38),
+                  disabledBackgroundColor: Colors.grey.withOpacity(0.12),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Food level is zero or negative, refill immediately
+      // Add your logic to actually refill the bowl here
+    }
+  }
+  // ... (rest of your existing code)
 }
 
 Widget _buildSmallCard(String title, String value, IconData icon) {
