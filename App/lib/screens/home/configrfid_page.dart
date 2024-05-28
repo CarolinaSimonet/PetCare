@@ -1,27 +1,27 @@
 import 'dart:convert';
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/data/server_data.dart';
-import 'package:petcare/utils/nfc_writter.dart';
+import 'package:petcare/screens/home/profile_page.dart';
 
-class ConfirmationRfid_page extends StatefulWidget {
-  const ConfirmationRfid_page({super.key});
+class ConfigRfid_page extends StatefulWidget {
+  const ConfigRfid_page({super.key});
   @override
-  State<ConfirmationRfid_page> createState() => _ConfirmationRfid_pageState();
+  State<ConfigRfid_page> createState() => _ConfigRfid_pageState();
 }
 
-class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
+class _ConfigRfid_pageState extends State<ConfigRfid_page> {
   Timer? _timer;
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    _configuration();
 
     // Initialize the timer to navigate after 20 seconds
     // _timer = Timer(const Duration(seconds: 3), () {
@@ -34,7 +34,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
     // });
   }
 
-  Future<void> _fetchData() async {
+  Future<void> _configuration() async {
     setState(() {
       isLoading = true;
     });
@@ -44,19 +44,9 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
       final userId = user?.uid ?? '';
       print('User ID: $userId');
 
-// 1. Fetch RFID from Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      final String rfidCode = userDoc.get('rfid');
-
-      writeRFIDTag(rfidCode); // Use the helper function from above
-
       // Use 10.0.2.2 for Android emulator, replace with your actual IP for physical device
       final url = Uri.parse(
-          "$SERVER_URL/getRFIDValid?userId=$userId"); // Replace with your actual IP
+          "$SERVER_URL/assignRFID?userId=$userId"); // Replace with your actual IP
 
       print('Request URL: $url');
 
@@ -71,26 +61,17 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
       print(
           'HTTP GET request completed with status code: ${response.statusCode}');
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        print('Response data: $data');
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      print('Response data: $data');
 
-        if (data['valid'] == true) {
-          print('RFID validated successfully');
-          // Navigate to MapPage
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MapPage()),
-          );
-        } else {
-          print('Invalid RFID');
-          // Handle invalid RFID scenario (e.g., show an error message)
-          _showErrorDialog('Invalid RFID');
-        }
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-        _showErrorDialog('Request failed with status: ${response.statusCode}');
-      }
+      
+        print('RFID validated successfully');
+        // Navigate to MapPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MyProfileScreen()),
+        );
+      
     } catch (e) {
       if (e is TimeoutException) {
         print('Error: Request timed out');
@@ -141,7 +122,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
         title: Padding(
           padding: const EdgeInsets.only(top: 8.0, left: 10.0),
           child: Text(
-            'Pet Track',
+            'A Gravar',
             style: TextStyle(
               color: Colors.brown.shade800,
               fontSize: 36,
@@ -171,7 +152,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
                   ),
                 ),
                 const Text(
-                  'Antes de começar o passeio',
+                  'A configurar RFID',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.black,
@@ -183,7 +164,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
                 const Padding(
                   padding: EdgeInsets.only(bottom: 110),
                   child: Text(
-                    'Usa o teu RFID Card',
+                    'Passe o cartão para configurar RFID',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.black,

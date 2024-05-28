@@ -61,6 +61,7 @@ dependencies:
   video_player: ^2.8.6
   firebase_messaging: ^14.7.19
   firebase_analytics: ^10.8.9
+  nfc_manager: ^3.5.0
   #image_picker: ^1.1.1
 
 dev_dependencies:

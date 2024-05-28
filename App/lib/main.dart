@@ -18,7 +18,12 @@ Future<void> main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
+    FirebaseApi.initNotifications(); // Call your FirebaseApi setup
     FirebaseMessaging.instance.subscribeToTopic('alerts');
+
+ 
+
     print('Firebase initialized successfully');
   } catch (e) {
     print('Failed to initialize Firebase: $e');
@@ -28,13 +33,17 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(); // Define the GlobalKey
+
 
   @override
   Widget build(BuildContext context) {
     return Provider<FirebaseAuth>(
+      
       create: (context) => FirebaseAuth.instance,
       child: MaterialApp(
         initialRoute: '/',
+        navigatorKey: navigatorKey,
         routes: {
           '/': (context) => const LandingPage(),
           '/home': (context) => const HomeScreen(),

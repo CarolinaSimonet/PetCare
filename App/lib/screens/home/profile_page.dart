@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+
 import '../general/generic_app_bar.dart';
 import '../data/firebase_functions.dart';
 import '../../main.dart';
+import 'configrfid_page.dart';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({Key? key}) : super(key: key);
@@ -467,7 +469,14 @@ Widget ConnectRfid(BuildContext context) {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ConfigRfid_page()),
+              );
+          // Assuming you have a MapPage to navigate to
+      
+            },
             child: const Text('Connect'),
           ),
           SizedBox(height: 20),

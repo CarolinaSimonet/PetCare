@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:petcare/screens/myPets/pet_page.dart';
 
 import '../../utils/data_classes.dart';
 import '../../utils/factory.dart';
@@ -64,12 +65,11 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
   Widget buildCard(MyPet pet, Color color) {
     return GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const WelcomeScreen(),
-            ),
-          );
+           Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PetDetailsPage(pet: pet), // Pass the pet object
+          ));
         },
         child: SizedBox(
             height: 110,
