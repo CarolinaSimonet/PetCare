@@ -1,18 +1,20 @@
 
+import 'package:intl/intl.dart';
+
 class MyPet {
   String gender;
   String name;
   String type;
   String? breed;
-  double weight;
+  String weight;
   String pathToImage;
   DateTime birthDate;
   String dietType;
-  double gramsFood;
-  int portionsFood;
-  int actualPortionsFood; //em quantas porções vai
-  double kmWalk;
-  double actualKmWalk; //quantos kms já percorreu hoje
+  String gramsFood;
+  String portionsFood;
+  String actualPortionsFood; //em quantas porções vai
+  String kmWalk;
+  String actualKmWalk; //quantos kms já percorreu hoje
 
 
 
@@ -37,13 +39,13 @@ class MyPet {
     String? name,
     String? type,
     String? breed,
-    double? weight,
+    String? weight,
     String? pathToImage,
     DateTime? birthDate,
     String? dietType,
-    double? gramsFood,
-    int? portionsFood,
-    double? kmWalk,
+    String? gramsFood,
+    String? portionsFood,
+    String? kmWalk,
 
   }) {
     return MyPet(
@@ -56,8 +58,23 @@ class MyPet {
       dietType: dietType ?? this.dietType,
       gramsFood: gramsFood ?? this.gramsFood,
       portionsFood: portionsFood ?? this.portionsFood,
-      kmWalk: kmWalk ?? this.kmWalk, actualPortionsFood: 0, actualKmWalk: 0,
+      kmWalk: kmWalk ?? this.kmWalk, actualPortionsFood: '0', actualKmWalk: '0',
     );
   }
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "gender": gender,
+    "type": type,
+    "breed": breed,
+    "actualKmWalk": actualKmWalk,
+    "actualPortionsFood": actualPortionsFood,
+    "dietType": dietType,
+    "gramsFood": gramsFood,
+    "kmWalk": kmWalk,
+    "pathToImage": pathToImage,
+    "portionsFood": portionsFood,
+    "weight": weight,
+  };
+
 }
 

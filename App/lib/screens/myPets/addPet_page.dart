@@ -1,6 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
+import 'package:petcare/utils/data_classes.dart';
 
 import '../Walking/ConfirmationRFID_page.dart';
 import '../general/generic_app_bar.dart';
@@ -39,6 +42,9 @@ class _AddPetScreenState extends State<AddPetScreen> {
   late String selectedBreed;
 
   int _currentIndex = 1;
+  
+  final DatabaseReference _database =
+  FirebaseDatabase.instance.ref();
 
   final List<Widget> _pages = [
     const HomeScreen(), // Home content
@@ -64,8 +70,48 @@ class _AddPetScreenState extends State<AddPetScreen> {
     super.initState();
   }
 
+
+
+  Future<void> addPet() async {
+    
+// Get user-entered data from TextFields, DropdownMenus etc.
+    final String name = nameController.text;
+    final String gender = genderController.text;
+    final String type = typeController.text;
+    final String breed = breedController.text;
+    final DateTime birthday = DateTime.now();
+    final String weight = weightController.text;
+    final String diet = dietController.text;
+    final String portions = foodPortionsController.text;
+    final String killometers = killometersController.text;
+    final String grams = foodGramsController.text;
+
+
+// Create a Pet object
+    final pet = MyPet(
+      name: name,
+      gender: gender,
+      type: type,
+      weight: weight, 
+      birthDate: birthday,
+      pathToImage: '', 
+      dietType: diet, 
+      gramsFood: grams,
+      portionsFood: portions,
+      actualPortionsFood: '0',
+      kmWalk: killometers,
+      actualKmWalk: '0',
+      breed:breed
+    );
+
+    final newPetRef = _database.child('pets').push();
+    newPetRef.set(pet.toJson());
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
         bottomNavigationBar: CurvedNavigationBar(
           backgroundColor: Colors.brown.shade800,
@@ -1227,6 +1273,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                                               ),
                                             ),
                                             onPressed: () {
+                                              addPet();
                                               //Navigator.push(context,
                                               // MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
                                             },
