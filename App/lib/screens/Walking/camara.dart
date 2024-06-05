@@ -92,65 +92,6 @@ class _CameraWidgetState extends State<CameraWidget> {
     }
   }
 
-/*
-  Future<void> sendImageToAPI(String base64Image) async {
-    final String url = "https://vision.foodvisor.io/api/1.0/en/analysis/";
-    final headers = {
-      "Authorization": "Api-Key NqbzyCxV.fEnncpqsY3YR1hfWnkfGxzrC6zP23E3v",
-      "Content-Type": "application/json"
-    };
-    final body = jsonEncode({"image": base64Image});
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: headers,
-        body: body,
-      );
-
-      if (response.statusCode == 200) {
-        // If the server returns an OK response, parse the JSON
-        var data = jsonDecode(response.body);
-        print("Success: $data");
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Response from API"),
-              content: Text("Success: $data"),
-              actions: [
-                TextButton(
-                  child: Text("OK"),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        // If that response was not OK, throw an error.
-        throw Exception('Failed to load post');
-      }
-    } catch (e) {
-      print('Caught error: $e');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("API Error"),
-            content: Text("Error occurred: $e"),
-            actions: [
-              TextButton(
-                child: Text("OK"),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }*/
-
   @override
   void dispose() {
     _controller?.dispose();
