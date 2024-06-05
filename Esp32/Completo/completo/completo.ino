@@ -36,7 +36,6 @@ float distanceInch;
 unsigned long lastSensorReadTime = 0;  // Timing control
 unsigned long interval = 1000;         // 1 second in milliseconds
 
-
 bool ledState = false;
 
 // Class for the bowl of each pet
@@ -48,7 +47,7 @@ private:
 
 public:
   SonicFoodBowl() {
-    //default constructor
+    // default constructor
   }
 
   SonicFoodBowl(byte trigPin, byte echoPin, byte id) {
@@ -90,7 +89,7 @@ private:
 
 public:
   WaterBowl() {
-    //Default constructor
+    // Default constructor
   }
 
   WaterBowl(byte sensorPowerPin, byte sensorPin, byte id) {
@@ -217,44 +216,28 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
-
   long bowl1Distance = fBowl1.sense();
   long wBowlLevel = wBowl1.sense();
 
-  
-  
-
   // Check fire status
   if (Firebase.ready() && signupOK) {
-    if (Firebase.RTDB.getInt(&fbdo, "/fireStatus")) {
-      int fireStatus = fbdo.intData();
-      Serial.println(fireStatus);
+    if (Firebase.RTDB.getInt(&fbdo, "/dispenseFood")) {
+      int dispenseFood = fbdo.intData();
 
+      Serial.println(dispenseFood);
 
-
-
-
-      if (fireStatus == 1) {
+      if (dispenseFood == 1) {
         ledState = true;
-        Serial.println("Fire detected");
+        Serial.println("Dispense water");
         bowl1Distance = fBowl1.sense();
         digitalWrite(ledPin, HIGH);
 
         if (wBowlLevel >= 1700) {
-
-          Serial.println('turn of');
+          Serial.println("turn off");
           digitalWrite(ledPin, LOW);
-          Serial.println('turned of');
-          Firebase.RTDB.setInt(&fbdo, "/fireStatus", 0);
-          
+          Serial.println("turned off");
+          Firebase.RTDB.setInt(&fbdo, "/dispenseFood", 0);
         }
-
-
-      } else if (fireStatus == 0) {
-        Serial.println("No fire detected");
-        digitalWrite(ledPin, LOW);
-      } else {
-        Serial.println("Error reading fire status");
       }
     } else {
       Serial.printf("Error getting fire status: %s\n", fbdo.errorReason().c_str());
@@ -267,6 +250,15 @@ void loop() {
 
     bowl1Distance = fBowl1.sense();
     wBowlLevel = wBowl1.sense();
+
+    // Fill water bowl and control LED
+    if (wBowlLevel < 400 && !ledState) {  // Check if bowl is not full AND LED is off
+      digitalWrite(ledPin, HIGH);  // Turn on LED to start dispensing water
+      ledState = true;           // Update the LED state
+    } else if (wBowlLevel >= 1700 && ledState) {  // Check if bowl is full AND LED is on
+      digitalWrite(ledPin, LOW);   // Turn off LED to stop dispensing water
+      ledState = false;          // Update the LED state
+    }
 
     String uid = rfidSensor.readCard();
 
@@ -287,6 +279,4 @@ void loop() {
       Firebase.RTDB.setFloat(&fbdo, "/lastRfid", wBowlLevel);
     }
   }
-
- 
 }
