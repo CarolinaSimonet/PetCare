@@ -21,17 +21,17 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    // _fetchData();
 
-    // Initialize the timer to navigate after 20 seconds
-    // _timer = Timer(const Duration(seconds: 3), () {
-    //   Navigator.pushReplacement(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) =>
-    //             const MapPage()), // Assuming you have a MapPage to navigate to
-    //   );
-    // });
+    //Initialize the timer to navigate after 20 seconds
+    _timer = Timer(const Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                const MapPage()), // Assuming you have a MapPage to navigate to
+      );
+    });
   }
 
   Future<void> _fetchData() async {

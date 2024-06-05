@@ -89,34 +89,42 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         }
 
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data =
-              snapshot.data!.data() as Map<String, dynamic>;
+          if (snapshot.hasData && snapshot.data!.exists) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
 
-          return Container(
-            margin: const EdgeInsets.all(20),
-            width: MediaQuery.of(context).size.width * 0.9,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildInfoRow(context, 'Name', data['name'] ?? '', data),
-                  const SizedBox(height: 10),
-                  _buildInfoRow(context, 'Email', data['email'] ?? '', data),
+            return Container(
+              margin: const EdgeInsets.all(20),
+              width: MediaQuery.of(context).size.width * 0.9,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
                 ],
               ),
-            ),
-          );
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                // Rest of the code...
+
+                child: Column(
+                  children: [
+                    _buildInfoRow(context, 'Name', data['name'] ?? '', data),
+                    const SizedBox(height: 10),
+                    _buildInfoRow(context, 'Email', data['email'] ?? '', data),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return const Text(
+                'No data found'); // Show a message if no data is found
+          }
         }
         return const CircularProgressIndicator(); // Show a loading indicator while fetching
       },
@@ -198,8 +206,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         TextButton(
           onPressed: () {
             Navigator.pop(context, controller.text);
-            Navigator.pushReplacement(context, 
-            MaterialPageRoute(builder: (context) => NavigationBarScreen()));
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => NavigationBarScreen()));
           },
           child: Text('Save'),
         ),

@@ -14,8 +14,7 @@ import 'package:camera/camera.dart';
 import 'package:petcare/screens/Walking/auxFunctions.dart';
 
 class MapPage extends StatefulWidget {
-  final String? imageUrl;
-  const MapPage({super.key, this.imageUrl});
+  const MapPage({super.key});
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -29,6 +28,7 @@ class _MapPageState extends State<MapPage> {
   List<LatLng> points = [];
   Timer? _timer;
   int _seconds = 0;
+  String? imageUrl;
 
   String get _formattedTime =>
       '${(_seconds ~/ 3600).toString().padLeft(2, '0')}:${((_seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}';
@@ -44,9 +44,9 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.imageUrl != null) {
+    if (imageUrl != null) {
       // If there's an imageUrl, you might want to do something with it
-      print("Received image URL: ${widget.imageUrl}");
+      print("Received image URL: ${imageUrl}");
       // You can also display the image or use it in any other required logic
     }
     _locationStream = _location.onLocationChanged;
@@ -184,7 +184,9 @@ class _MapPageState extends State<MapPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const CameraWidget()),
+                            builder: (context) => CameraWidget(
+                                  onImageUrlUpdate: updateImageUrl,
+                                )),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -224,6 +226,12 @@ class _MapPageState extends State<MapPage> {
     _mapController.move(newLocation, 18.0);
   }
 
+  void updateImageUrl(String url) {
+    setState(() {
+      imageUrl = url;
+    });
+  }
+
   void _stopTracking() {
     setState(() {
       _isTracking = false;
@@ -261,8 +269,9 @@ class _MapPageState extends State<MapPage> {
                   onPressed: () {
                     // Close the dialog
                     // Implement your camera functionality here
+                    debugPrint(imageUrl);
                     addActivity(
-                      imageUrl: widget.imageUrl ?? "",
+                      imageUrl: imageUrl ?? "",
                       userId: FirebaseAuth.instance.currentUser!
                           .uid, // Assuming the user is logged in
                       description: 'Morning walk in the park',
@@ -272,7 +281,7 @@ class _MapPageState extends State<MapPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const HomeScreen()),
+                          builder: (context) => const NavigationBarScreen()),
                     );
                   },
                 ),

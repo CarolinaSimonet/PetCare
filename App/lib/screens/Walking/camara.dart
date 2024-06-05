@@ -7,7 +7,8 @@ import 'dart:async';
 import 'package:petcare/screens/Walking/imagePreview.dart';
 
 class CameraWidget extends StatefulWidget {
-  const CameraWidget({super.key});
+  final Function(String) onImageUrlUpdate;
+  const CameraWidget({super.key, required this.onImageUrlUpdate});
 
   @override
   _CameraWidgetState createState() => _CameraWidgetState();
@@ -16,7 +17,7 @@ class CameraWidget extends StatefulWidget {
 class _CameraWidgetState extends State<CameraWidget> {
   CameraController? _controller;
   List<CameraDescription>? _cameras;
-  String? _base64Image;
+
   Uint8List? _imageBytes;
 
   @override
@@ -74,7 +75,6 @@ class _CameraWidgetState extends State<CameraWidget> {
       //await saveImageMetadata(imageUrl, "userId", "activityId", DateTime.now());
 
       setState(() {
-        _base64Image = base64Encode(bytes);
         _imageBytes = bytes; // Display the taken image on screen
       });
 
@@ -83,7 +83,10 @@ class _CameraWidgetState extends State<CameraWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ImagePreviewPage(imageBytes: _imageBytes!),
+            builder: (context) => ImagePreviewPage(
+              imageBytes: _imageBytes!,
+              onImageUrlUpdated: widget.onImageUrlUpdate,
+            ),
           ),
         );
       }
