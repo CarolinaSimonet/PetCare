@@ -111,6 +111,44 @@ Future<void> addActivity({
   }
 }
 
+Future<void> addPet({
+  required String name,
+  required String gender,
+  required String type,
+  required String breed,
+  required String weight,
+  required String diet,
+  required String portions,
+  required String killometers,
+  required String grams
+}) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+
+
+  try {
+    await firestore.collection('pets').add({
+      'name': name,
+      'gender': gender,
+      'type': type,
+      'breed': breed,
+      'actualKmWalk': '0',
+      'actualPortionsFood': '0',
+      'dietType': diet,
+      "gramsFood": grams,
+      "kmWalk": killometers,
+      "portionsFood": portions,
+      "weight": weight,
+      'createdAt': FieldValue.serverTimestamp(), // server-side timestamp
+    });
+    print("New Pet successfully added!");
+  } catch (e) {
+    print("Error adding Pet: $e");
+    throw Exception("Failed to add Pet");
+  }
+}
+
+
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
