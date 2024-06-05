@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -84,14 +85,12 @@ Future<void> saveImageMetadata(
   }
 }
 
-Future<void> addActivity({
-  required String imageUrl,
-  required String userId,
-  String? description,
-  DateTime? date,
-  double? latitude,
-  double? longitude,
-}) async {
+Future<void> addActivity(
+    {required String imageUrl,
+    required String userId,
+    String? description,
+    DateTime? date,
+    double? distance}) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   try {
@@ -100,8 +99,7 @@ Future<void> addActivity({
       'userId': userId,
       'description': description ?? 'No description provided.',
       'date': date ?? DateTime.now(),
-      'location': GeoPoint(latitude ?? 0.0,
-          longitude ?? 0.0), // default to (0,0) if no location is provided
+      'distance': distance, // default to (0,0) if no location is provided
       'createdAt': FieldValue.serverTimestamp(), // server-side timestamp
     });
     print("Activity successfully added!");

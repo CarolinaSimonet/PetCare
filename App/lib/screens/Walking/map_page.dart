@@ -11,6 +11,7 @@ import 'package:petcare/screens/home/home_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
+import 'package:petcare/screens/Walking/auxFunctions.dart';
 
 class MapPage extends StatefulWidget {
   final String? imageUrl;
@@ -73,7 +74,8 @@ class _MapPageState extends State<MapPage> {
             point:
                 LatLng(currentLocation.latitude!, currentLocation.longitude!),
             child: Container(
-              child: const Icon(Icons.location_on, size: 40.0, color: Colors.red),
+              child:
+                  const Icon(Icons.location_on, size: 40.0, color: Colors.red),
             ),
           ),
         ];
@@ -89,7 +91,8 @@ class _MapPageState extends State<MapPage> {
       barrierDismissible: false, // User must tap a button!
       builder: (BuildContext context) {
         return AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           title: const Text(' Com que vais passear ?'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -135,7 +138,8 @@ class _MapPageState extends State<MapPage> {
                 height: 80.0,
                 point: newLocation,
                 child: Container(
-                  child: const Icon(Icons.location_on, size: 40.0, color: Colors.red),
+                  child: const Icon(Icons.location_on,
+                      size: 40.0, color: Colors.red),
                 ),
               ),
             ];
@@ -179,7 +183,8 @@ class _MapPageState extends State<MapPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CameraWidget()),
+                        MaterialPageRoute(
+                            builder: (context) => const CameraWidget()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -246,7 +251,8 @@ class _MapPageState extends State<MapPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Terminar'),
-          content: const Text('Tem a certeza que pertende terminar o seu passeio'),
+          content:
+              const Text('Tem a certeza que pertende terminar o seu passeio'),
           actions: <Widget>[
             Row(
               children: [
@@ -261,8 +267,7 @@ class _MapPageState extends State<MapPage> {
                           .uid, // Assuming the user is logged in
                       description: 'Morning walk in the park',
                       date: DateTime.now(),
-                      latitude: 37.422,
-                      longitude: -122.084,
+                      distance: calculateTotalDistance(points),
                     );
                     Navigator.push(
                       context,
