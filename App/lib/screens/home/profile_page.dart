@@ -77,22 +77,22 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Widget myInfo(BuildContext context) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        }
+  return FutureBuilder<DocumentSnapshot>(
+    future: FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get(),
+    builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+      if (snapshot.hasError) {
+        return Text('Error: ${snapshot.error}'); 
+      }
 
-        if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic> data =
-              snapshot.data!.data() as Map<String, dynamic>;
+      if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.hasData && snapshot.data!.exists) { // Check for data
+          Map<String, dynamic>? data = snapshot.data!.data() as Map<String, dynamic>?; // Use null-aware operator
 
-          return Container(
+          if (data != null) { // Check if data is not null
+            return  Container(
             margin: const EdgeInsets.all(20),
             width: MediaQuery.of(context).size.width * 0.9,
             decoration: BoxDecoration(
@@ -117,11 +117,19 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ),
             ),
           );
+          } else {
+            return Text('No data found.'); // Handle null data
+          }
+        } else {
+          return Text('Document does not exist.'); // Handle non-existent document
         }
-        return const CircularProgressIndicator(); // Show a loading indicator while fetching
-      },
-    );
-  }
+      }
+
+      return const CircularProgressIndicator(); // Show loading indicator
+    },
+  );
+}
+
 
   Widget _buildInfoRow(BuildContext context, String label, String value,
       Map<String, dynamic> data) {

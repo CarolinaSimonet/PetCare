@@ -1,4 +1,8 @@
 {
     "workbench.colorTheme": "Minimal Light",
-    "workbench.preferredDarkColorTheme": "Dimi Theme (Darker)"
+    "workbench.preferredDarkColorTheme": "Dimi Theme (Darker)",
+    "files.associations": {
+        "stdexcept": "cpp",
+        "string": "cpp"
+    }
 }

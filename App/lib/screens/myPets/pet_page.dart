@@ -25,7 +25,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   int waterLevel = -1;
   int foodLevel = -1;
   bool isLoading = true;
-  late double waterLevelPercentage;
+  int waterLevelPercentage = 0;
   late MyPet pet;
 
   @override
@@ -48,15 +48,38 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       final data = event.snapshot.value;
       setState(() {
         if (data is int) {
-          // Check if data is an integer
           waterLevel = data;
-          waterLevelPercentage = (waterLevel - 150) * 100 / 50;
+          // Check if data is an integer
+          int aux = (((waterLevel - 400) / 1100) * 100).toInt(); 
+          if (aux <= 0) {
+            waterLevelPercentage = 0;
+          } else if (aux > 100) {
+            waterLevelPercentage = 100;
+          } else {
+            waterLevelPercentage = aux;
+          }
+ 
+        
+        
         } else if (data != null) {
           // Check if data is not null before parsing
           waterLevel = int.tryParse(data.toString()) ??
               0; // Attempt to parse or default to 0
 
-          waterLevelPercentage = (waterLevel - 150) * 100 / 50;
+          if (waterLevel < 400) {
+            waterLevel = 400;
+          } else if (waterLevel > 1500) {
+            waterLevel = 1500;
+          }
+          int aux = (((waterLevel - 400) / 1100) * 100).toInt();
+          if(aux < 0){
+            waterLevelPercentage = 0;
+          }else if(aux > 100){
+            waterLevelPercentage = 100;}
+          else{
+            waterLevelPercentage = aux;
+          }
+          
         } else {
           waterLevel = 0; // Set to 0 if data is null
           waterLevelPercentage = 0;
@@ -64,7 +87,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       });
     });
 
-    _database.child('fBowl1').onValue.listen((event) {
+    _database.child('fBowl1/cm').onValue.listen((event) {
       final data = event.snapshot.value;
       setState(() {
         if (data is int) {
@@ -153,7 +176,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
     );
   }
 
-  Widget _buildBowlCard(String title, double level, IconData icon) {
+  Widget _buildBowlCard(String title, int level, IconData icon) {
     return Card(
       elevation: 3,
       child: Padding(
@@ -193,7 +216,16 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 ],
               )
             else
-              Text('Error'), // Handle unexpected level values (e.g., negative)
+               Column(
+                // Visual representation for valid levels (0-100)
+                children: [
+                  Text('0%'),
+                  LinearProgressIndicator(
+                    value: 0,
+                    minHeight: 8,
+                  ),
+                ],
+              ), // Handle unexpected level values (e.g., negative)
           ],
         ),
       ),

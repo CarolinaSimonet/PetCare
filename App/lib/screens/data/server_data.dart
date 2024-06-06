@@ -1,1 +1,1 @@
-const SERVER_URL = 'https://866e-85-138-146-235.ngrok-free.app';
+const SERVER_URL = 'http://10.22.109.217:8080/';
