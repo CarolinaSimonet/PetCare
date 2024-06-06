@@ -97,7 +97,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
       } else {
         print('Error fetching data: $e');
       }
-      _showErrorDialog('Error fetching data: $e');
+      _showErrorDialog('You donnot have an RFID Card, please register it in the settings.');
     } finally {
       setState(() {
         isLoading = false;
