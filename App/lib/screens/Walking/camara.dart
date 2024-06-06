@@ -7,7 +7,8 @@ import 'dart:async';
 import 'package:petcare/screens/Walking/imagePreview.dart';
 
 class CameraWidget extends StatefulWidget {
-  const CameraWidget({super.key});
+  final Function(String) onImageUrlUpdate;
+  const CameraWidget({super.key, required this.onImageUrlUpdate});
 
   @override
   _CameraWidgetState createState() => _CameraWidgetState();
@@ -16,7 +17,7 @@ class CameraWidget extends StatefulWidget {
 class _CameraWidgetState extends State<CameraWidget> {
   CameraController? _controller;
   List<CameraDescription>? _cameras;
-  String? _base64Image;
+
   Uint8List? _imageBytes;
 
   @override
@@ -74,7 +75,6 @@ class _CameraWidgetState extends State<CameraWidget> {
       //await saveImageMetadata(imageUrl, "userId", "activityId", DateTime.now());
 
       setState(() {
-        _base64Image = base64Encode(bytes);
         _imageBytes = bytes; // Display the taken image on screen
       });
 
@@ -83,7 +83,10 @@ class _CameraWidgetState extends State<CameraWidget> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ImagePreviewPage(imageBytes: _imageBytes!),
+            builder: (context) => ImagePreviewPage(
+              imageBytes: _imageBytes!,
+              onImageUrlUpdated: widget.onImageUrlUpdate,
+            ),
           ),
         );
       }
@@ -91,65 +94,6 @@ class _CameraWidgetState extends State<CameraWidget> {
       print('Error occurred during taking or uploading the picture: $e');
     }
   }
-
-/*
-  Future<void> sendImageToAPI(String base64Image) async {
-    final String url = "https://vision.foodvisor.io/api/1.0/en/analysis/";
-    final headers = {
-      "Authorization": "Api-Key NqbzyCxV.fEnncpqsY3YR1hfWnkfGxzrC6zP23E3v",
-      "Content-Type": "application/json"
-    };
-    final body = jsonEncode({"image": base64Image});
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: headers,
-        body: body,
-      );
-
-      if (response.statusCode == 200) {
-        // If the server returns an OK response, parse the JSON
-        var data = jsonDecode(response.body);
-        print("Success: $data");
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Response from API"),
-              content: Text("Success: $data"),
-              actions: [
-                TextButton(
-                  child: Text("OK"),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        // If that response was not OK, throw an error.
-        throw Exception('Failed to load post');
-      }
-    } catch (e) {
-      print('Caught error: $e');
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("API Error"),
-            content: Text("Error occurred: $e"),
-            actions: [
-              TextButton(
-                child: Text("OK"),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }*/
 
   @override
   void dispose() {

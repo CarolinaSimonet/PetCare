@@ -6,8 +6,10 @@ import 'package:petcare/screens/data/firebase_functions.dart';
 
 class ImagePreviewPage extends StatelessWidget {
   final Uint8List imageBytes;
+  final Function(String) onImageUrlUpdated;
 
-  const ImagePreviewPage({super.key, required this.imageBytes});
+  const ImagePreviewPage(
+      {super.key, required this.imageBytes, required this.onImageUrlUpdated});
 
   Future<void> _submitPicture(context) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -17,8 +19,7 @@ class ImagePreviewPage extends StatelessWidget {
     }
 
     final String userId = user.uid;
-    final String fileName =
-        'users/$userId/images/${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final String fileName = 'users/$userId/images/${DateTime.now()}.jpg';
     final Reference ref = FirebaseStorage.instance.ref().child(fileName);
 
     print('Uploading image...');
@@ -33,7 +34,9 @@ class ImagePreviewPage extends StatelessWidget {
           builder: (context) => MapPage(imageUrl: imageUrl),
         ),
       );*/
-      Navigator.of(context).pop();
+      onImageUrlUpdated(imageUrl);
+      debugPrint('Image uploaded. URL: $imageUrl');
+      Navigator.pop(context);
       Navigator.pop(context, imageUrl);
       //Navigator.pop(context);
     } catch (e) {

@@ -11,10 +11,10 @@ import 'package:petcare/screens/home/home_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
+import 'package:petcare/screens/Walking/auxFunctions.dart';
 
 class MapPage extends StatefulWidget {
-  final String? imageUrl;
-  const MapPage({super.key, this.imageUrl});
+  const MapPage({super.key});
   @override
   _MapPageState createState() => _MapPageState();
 }
@@ -28,6 +28,7 @@ class _MapPageState extends State<MapPage> {
   List<LatLng> points = [];
   Timer? _timer;
   int _seconds = 0;
+  String? imageUrl;
 
   String get _formattedTime =>
       '${(_seconds ~/ 3600).toString().padLeft(2, '0')}:${((_seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}';
@@ -43,9 +44,9 @@ class _MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.imageUrl != null) {
+    if (imageUrl != null) {
       // If there's an imageUrl, you might want to do something with it
-      print("Received image URL: ${widget.imageUrl}");
+      print("Received image URL: ${imageUrl}");
       // You can also display the image or use it in any other required logic
     }
     _locationStream = _location.onLocationChanged;
@@ -73,7 +74,8 @@ class _MapPageState extends State<MapPage> {
             point:
                 LatLng(currentLocation.latitude!, currentLocation.longitude!),
             child: Container(
-              child: const Icon(Icons.location_on, size: 40.0, color: Colors.red),
+              child:
+                  const Icon(Icons.location_on, size: 40.0, color: Colors.red),
             ),
           ),
         ];
@@ -89,7 +91,8 @@ class _MapPageState extends State<MapPage> {
       barrierDismissible: false, // User must tap a button!
       builder: (BuildContext context) {
         return AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
           title: const Text(' Com que vais passear ?'),
           content: SingleChildScrollView(
             child: ListBody(
@@ -135,7 +138,8 @@ class _MapPageState extends State<MapPage> {
                 height: 80.0,
                 point: newLocation,
                 child: Container(
-                  child: const Icon(Icons.location_on, size: 40.0, color: Colors.red),
+                  child: const Icon(Icons.location_on,
+                      size: 40.0, color: Colors.red),
                 ),
               ),
             ];
@@ -179,7 +183,10 @@ class _MapPageState extends State<MapPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const CameraWidget()),
+                        MaterialPageRoute(
+                            builder: (context) => CameraWidget(
+                                  onImageUrlUpdate: updateImageUrl,
+                                )),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -219,6 +226,12 @@ class _MapPageState extends State<MapPage> {
     _mapController.move(newLocation, 18.0);
   }
 
+  void updateImageUrl(String url) {
+    setState(() {
+      imageUrl = url;
+    });
+  }
+
   void _stopTracking() {
     setState(() {
       _isTracking = false;
@@ -246,7 +259,8 @@ class _MapPageState extends State<MapPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Terminar'),
-          content: const Text('Tem a certeza que pertende terminar o seu passeio'),
+          content:
+              const Text('Tem a certeza que pertende terminar o seu passeio'),
           actions: <Widget>[
             Row(
               children: [
@@ -255,19 +269,19 @@ class _MapPageState extends State<MapPage> {
                   onPressed: () {
                     // Close the dialog
                     // Implement your camera functionality here
+                    debugPrint(imageUrl);
                     addActivity(
-                      imageUrl: widget.imageUrl ?? "",
+                      imageUrl: imageUrl ?? "",
                       userId: FirebaseAuth.instance.currentUser!
                           .uid, // Assuming the user is logged in
                       description: 'Morning walk in the park',
                       date: DateTime.now(),
-                      latitude: 37.422,
-                      longitude: -122.084,
+                      distance: calculateTotalDistance(points),
                     );
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const HomeScreen()),
+                          builder: (context) => const NavigationBarScreen()),
                     );
                   },
                 ),
