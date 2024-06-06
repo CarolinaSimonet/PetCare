@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/data/server_data.dart';
 import 'package:petcare/screens/home/profile_page.dart';
 
@@ -52,7 +50,7 @@ class _ConfigRfid_pageState extends State<ConfigRfid_page> {
 
       // Adding a timeout to the request
       final response =
-          await http.get(url).timeout(Duration(seconds: 30), onTimeout: () {
+          await http.get(url).timeout(const Duration(seconds: 30), onTimeout: () {
         Navigator.pop(context);
         throw TimeoutException(
             'The connection has timed out, Please try again!');
@@ -90,12 +88,12 @@ class _ConfigRfid_pageState extends State<ConfigRfid_page> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),

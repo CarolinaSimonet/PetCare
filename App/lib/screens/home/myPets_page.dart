@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:petcare/screens/myPets/pet_page.dart';
 
 import '../../utils/data_classes.dart';
-import '../../utils/factory.dart';
 import '../general/generic_app_bar.dart';
 import '../myPets/addPet_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MyPetsScreen extends StatefulWidget {
   const MyPetsScreen({super.key});
@@ -17,23 +18,64 @@ class MyPetsScreen extends StatefulWidget {
 
 class _MyPetsScreenState extends State<MyPetsScreen> {
   Random random = Random();
-  List<MyPet> petsSet = myPetsExample;
+  List<Color> cardColors = [
+    const Color(0xfff4dac2),
+    const Color(0xfffdf8c3),
+    const Color(0xffd7ecf5)
+  ];
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  Future<List<MyPet>> _fetchPets() async {
+    String userId =
+        auth.currentUser?.uid ?? ''; // Fallback to empty string if null
+    if (userId.isEmpty) {
+      throw Exception("User not logged in");
+    }
+    List<MyPet> pets = [];
+
+    // First, fetch the user document to get the list of pet IDs
+    DocumentSnapshot userDoc =
+        await firestore.collection('users').doc(userId).get();
+    List<dynamic> petIds =
+        (userDoc.data() as Map<String, dynamic>)['pets'] ?? [];
+
+    // Fetch each pet using the IDs
+    for (var petId in petIds) {
+      DocumentSnapshot petDoc =
+          await firestore.collection('pets').doc(petId).get();
+      var data = petDoc.data() as Map<String, dynamic>;
+
+      DateTime birthDate = (data['birthDate'] != null)
+          ? DateTime.parse(data['birthDate'])
+          : DateTime.now(); // Handling null
+      String pathToImage = data['pathToImage'] ??
+          'path/to/default/image.png'; // Default image path
+
+      MyPet pet = MyPet(
+        gender: data['gender'] ?? 'Unknown',
+        name: data['name'] ?? 'No Name',
+        type: data['type'] ?? 'Unknown Type',
+        breed: data['breed'] ?? 'None',
+        weight: data['weight']?.toString() ??
+            '0', // Make sure to call toString() on non-String fields
+        birthDate: birthDate,
+        pathToImage: pathToImage,
+        dietType: data['dietType'] ?? 'Unknown Diet',
+        gramsFood: data['gramsFood']?.toString() ?? '0',
+        portionsFood: data['portionsFood']?.toString() ?? '0',
+        actualPortionsFood: data['actualPortionsFood']?.toString() ?? '0',
+        kmWalk: data['kmWalk']?.toString() ?? '0',
+        actualKmWalk: data['actualKmWalk']?.toString() ?? '0',
+      );
+
+      pets.add(pet);
+    }
+
+    return pets;
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> daySections = [];
-    List<Color> cardColors = [
-      const Color(0xfff4dac2),
-      const Color(0xfffdf8c3),
-      const Color(0xffd7ecf5)
-    ];
-    int colorIdx = 0;
-
-    for (MyPet appointment in myPetsExample) {
-      daySections.add(buildCard(appointment, cardColors[colorIdx]));
-      colorIdx < 2 ? colorIdx++ : colorIdx = 0;
-    }
-
     return Scaffold(
       extendBodyBehindAppBar: false,
       backgroundColor: const Color(0xfffafbfa),
@@ -41,22 +83,28 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
         title: "My Pets",
         icon: Icons.add_circle,
         mpr: MaterialPageRoute(builder: (context) => const AddPetScreen()),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.calendar_month,
-                size: 40, color: Colors.brown.shade800),
-            onPressed: () {
-              // Add your onPressed logic here
-            },
-          ),
-        ],
+        actions: const [],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(children: daySections),
-          ),
-        ],
+      body: FutureBuilder<List<MyPet>>(
+        future: _fetchPets(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error fetching pets ${snapshot.error}"));
+          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                var pet = snapshot.data![index];
+                return buildCard(
+                    pet, cardColors[random.nextInt(cardColors.length)]);
+              },
+            );
+          } else {
+            return const Center(child: Text("No pets found"));
+          }
+        },
       ),
     );
   }
@@ -93,7 +141,9 @@ class _MyPetsScreenState extends State<MyPetsScreen> {
                       child: CircleAvatar(
                         radius: 37,
                         backgroundColor: color,
-                        foregroundImage: AssetImage(pet.pathToImage),
+                        foregroundImage: AssetImage(pet.type == 'Dog'
+                            ? 'assets/images/labrador.png'
+                            : 'assets/images/cat.png'),
                       ),
                     ),
                   ),

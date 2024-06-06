@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:petcare/screens/data/firebase_functions.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
-import 'package:petcare/screens/home/home_page.dart';
-import 'package:petcare/screens/welcome/welcome_page.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,6 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
         emailController.text,
         passwordController.text,
       );
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -245,10 +245,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         try {
                           signInWithEmailAndPassword();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => NavigationBarScreen()));
                         } catch (e) {
                           print(e);
                         }

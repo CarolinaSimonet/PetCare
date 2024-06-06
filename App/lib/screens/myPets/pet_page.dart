@@ -1,12 +1,5 @@
-import 'dart:convert';
-import 'dart:ffi';
-import 'dart:math';
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:petcare/screens/data/server_data.dart';
 import '../../utils/data_classes.dart';
-import 'package:http/http.dart' as http;
 import 'package:firebase_database/firebase_database.dart';
 
 class PetDetailsPage extends StatefulWidget {
@@ -119,7 +112,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            Row(
+            const Row(
               children: [],
             ),
             const SizedBox(height: 20),
@@ -136,7 +129,9 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     Center(
                       child: CircleAvatar(
                         radius: 80,
-                        backgroundImage: AssetImage(pet.pathToImage),
+                        backgroundImage: AssetImage(pet.type == 'Dog'
+                            ? 'assets/images/labrador.png'
+                            : 'assets/images/cat.png'),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -183,7 +178,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             const SizedBox(height: 5),
             Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             if (level == -1)
-              SizedBox(
+              const SizedBox(
                 // Placeholder during loading
                 height: 10,
                 width: 10,
@@ -201,7 +196,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 ],
               )
             else if (level < 0)
-              Column(
+              const Column(
                 // Visual representation for valid levels (0-100)
                 children: [
                   Text('0%'),
@@ -240,32 +235,33 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             const SizedBox(height: 5),
             Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             if (level < 50)
-              SizedBox(
+              const SizedBox(
                 child: Text(
                   'Has food',
                   style: TextStyle(color: Color.fromARGB(255, 130, 177, 131)),
                 ),
               )
             else if (level > 50)
-              SizedBox(
+              const SizedBox(
                 child: Text(
                   'Empty',
                   style: TextStyle(color: Color.fromARGB(255, 161, 113, 113)),
                 ),
               )
             else
-              Text('Error'),
+              const Text('Error'),
 
             const SizedBox(height: 5),
             // Handle unexpected level values (e.g., negative)
             ElevatedButton(
-              onPressed: _onPress, child: Text('Refill'), //make it purple
+              onPressed: _onPress, //make it purple
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Color.fromARGB(255, 110, 100, 138),
+                backgroundColor: const Color.fromARGB(255, 110, 100, 138),
                 disabledForegroundColor: Colors.grey.withOpacity(0.38),
                 disabledBackgroundColor: Colors.grey.withOpacity(0.12),
               ),
+              child: const Text('Refill'),
             )
           ],
         ),
@@ -284,16 +280,16 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             content: const Text("The food bowl still has food. "),
             actions: <Widget>[
               ElevatedButton(
-                child: const Text("ok"),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Color.fromARGB(255, 110, 100, 138),
+                  backgroundColor: const Color.fromARGB(255, 110, 100, 138),
                   disabledForegroundColor: Colors.grey.withOpacity(0.38),
                   disabledBackgroundColor: Colors.grey.withOpacity(0.12),
                 ),
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
+                child: const Text("ok"),
               ),
             ],
           );

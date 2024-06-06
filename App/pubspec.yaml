@@ -93,6 +93,7 @@ flutter:
     - assets/images/
     - assets/images/walking.png
     - assets/images/labrador.png
+    - assets/images/cat.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

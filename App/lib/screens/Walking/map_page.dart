@@ -8,12 +8,11 @@ import 'package:petcare/screens/Walking/camara.dart';
 import 'package:petcare/screens/data/animal.dart';
 import 'package:petcare/screens/data/firebase_functions.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
-import 'package:petcare/screens/home/home_page.dart';
-import 'package:petcare/utils/data_classes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:petcare/screens/Walking/auxFunctions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -31,7 +30,7 @@ class _MapPageState extends State<MapPage> {
   Timer? _timer;
   int _seconds = 0;
   String? imageUrl;
-
+  Animal? selectedAnimal;
   String get _formattedTime =>
       '${(_seconds ~/ 3600).toString().padLeft(2, '0')}:${((_seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}';
 
@@ -48,7 +47,7 @@ class _MapPageState extends State<MapPage> {
     super.initState();
     if (imageUrl != null) {
       // If there's an imageUrl, you might want to do something with it
-      print("Received image URL: ${imageUrl}");
+      print("Received image URL: $imageUrl");
       // You can also display the image or use it in any other required logic
     }
     _locationStream = _location.onLocationChanged;
@@ -93,82 +92,60 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  Future<List<Animal>> _showAnimalChoiceDialog() async {
-    final animals = await fetchAllAnimals();
-    if (!mounted) return [];
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-    List<Animal> selectedAnimals = [];
+  Future<List<Animal>> _fetchAnimals() async {
+    String userId =
+        FirebaseAuth.instance.currentUser!.uid; // Get the current user's ID
+    List<Animal> pets = [];
 
-    print("Show Dialog2");
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('pets')
+        .where('userId', isEqualTo: userId)
+        .get();
 
-    await showDialog(
+    for (var doc in querySnapshot.docs) {
+      pets.add(Animal.fromMap(doc.data(), doc.id));
+    }
+
+    return pets;
+  }
+
+  Future<void> _showAnimalChoiceDialog() async {
+    final animals = await _fetchAnimals();
+    if (!mounted) return;
+    showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-              title: const Text(' Com quem vais passear ?'),
-              content: SingleChildScrollView(
-                child: Column(
-                  children: animals.map((animal) {
-                    bool isChecked = selectedAnimals.contains(animal);
-                    return CheckboxListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 5.0),
-                      title: Text(animal.name),
-                      value: isChecked,
-                      onChanged: (newValue) {
-                        setState(() {
-                          if (newValue!) {
-                            selectedAnimals.add(animal);
-                          } else {
-                            selectedAnimals.remove(animal);
-                          }
-                        });
-                      },
-                      secondary: CircleAvatar(
-                        radius: 60,
-                        backgroundImage: Image.asset(
-                          'assets/${animal.image}',
-                          fit: BoxFit.cover,
-                        ).image,
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.pop(context, []);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NavigationBarScreen()));
-                    // Return an empty list on cancel
-                  },
-                ),
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    if (selectedAnimals.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Por favor selecione um animal'),
+        return AlertDialog(
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+          title: const Text(' Com que vais passear ?'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: animals
+                  .map((animal) => ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 5.0),
+                        leading: CircleAvatar(
+                          radius: 60, // Size of the circle
+                          backgroundImage: Image.asset(
+                            animal.image,
+                            fit: BoxFit.cover,
+                          ).image,
                         ),
-                      );
-                      return;
-                    } else
-                      Navigator.pop(context, selectedAnimals);
-                  },
-                ),
-              ],
-            );
-          },
+                        title: Text(animal.name),
+                        onTap: () {
+                          // Do something when an animal is tapped
+                          selectedAnimal = animal;
+                          Navigator.of(context).pop();
+                        },
+                      ))
+                  .toList(),
+            ),
+          ),
         );
       },
     );
