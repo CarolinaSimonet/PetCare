@@ -33,36 +33,43 @@ class Animal {
     required this.weight,
   });
 
-  // Factory constructor with null safety
-  factory Animal.fromFirestore(DocumentSnapshot doc) {
+factory Animal.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
-    
-    int tryParseInt(dynamic value) {
-      if (value == null) return 0;
-      return int.tryParse(value.toString()) ?? 0;
-    }
-
     return Animal(
       id: doc.id,
-      name: data?['name'] ?? '', // Use ?? to provide default value if null
+      name: data?['name'] ?? '',
       type: data?['type'] ?? '',
       image: data?['image'] ?? '',
       gender: data?['gender'] ?? '',
       dietType: data?['dietType'] ?? '',
-      actualPortionsFood: tryParseInt(data?['actualPortionsFood']),
-      portionsFood: tryParseInt(data?['portionsFood']),
-      actualKmWalk: tryParseInt(data?['actualKmWalk']),
-      kmWalk: tryParseInt(data?['kmWalk']),
+      actualPortionsFood: _parseIntSafely(data?['actualPortionsFood']),
+      portionsFood: _parseIntSafely(data?['portionsFood']),
+      actualKmWalk: _parseIntSafely(data?['actualKmWalk']),
+      kmWalk: _parseIntSafely(data?['kmWalk']),
       breed: data?['breed'] ?? '',
       createdAt: data?['createdAt'].toString() ?? '',
-      gramsFood: tryParseInt(data?['gramsFood']),
-      weight: tryParseInt(data?['weight']),
+      gramsFood: _parseIntSafely(data?['gramsFood']),
+      weight: _parseIntSafely(data?['weight']),
     );
   }
+
+  // Helper function for safe parsing
+  static int _parseIntSafely(dynamic value) {
+    if (value is int) return value;
+    if (value is String && value.isNotEmpty && int.tryParse(value) != null) {
+      return int.parse(value);
+    }
+    return 0; // Default to 0 if parsing fails
+  }
+
 }
 
 Future<List<Animal>> fetchAllAnimals() async {
+
+    print("Passou 1a fnwejnj knwejfwpkemf k");
   try {
+
+    print("Passou 1a fnwejnj knwejfwpkemf k");
     // Fetch all documents from the 'pets' collection
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('pets')
@@ -72,7 +79,7 @@ Future<List<Animal>> fetchAllAnimals() async {
     // Convert documents to Animal objects
     final List<Animal> animals =
         snapshot.docs.map((doc) => Animal.fromFirestore(doc)).toList();
-
+  print("Passou 2a fnwejnj knwejfwpkemf k");
     if (snapshot.metadata.isFromCache) {
       // Fetch fresh data in the background if cache was used
       FirebaseFirestore.instance

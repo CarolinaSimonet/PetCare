@@ -26,7 +26,7 @@ class _MapPageState extends State<MapPage> {
   final MapController _mapController = MapController();
   final Location _location = Location();
   late Stream<LocationData> _locationStream;
-  Animal? _selectedAnimal;
+  List<Animal> _selectedAnimals = [];
   List<Marker> markers = [];
   List<LatLng> points = [];
   Timer? _timer;
@@ -58,8 +58,9 @@ class _MapPageState extends State<MapPage> {
         throw Exception('Location permission not granted');
       }
     });
-    if (_selectedAnimal == null) {
+    if (_selectedAnimals.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Passou 1a fnwejnj knwejfwpkemf k");
         _showAnimalChoiceDialog();
       });
     }
@@ -86,7 +87,6 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -100,43 +100,63 @@ class _MapPageState extends State<MapPage> {
     return pets;
   }
 
-
   Future<void> _showAnimalChoiceDialog() async {
+    print("Passou 1a fnwejnj knwejfwpkemf k");
+
     final animals = await fetchAllAnimals();
 
     if (!mounted) return;
+
+    // List to store selected animals
+
     showDialog(
       context: context,
-      barrierDismissible: false, // User must tap a button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-          title: const Text(' Com que vais passear ?'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: animals
-                  .map((animal) => ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5.0),
-                        leading: CircleAvatar(
-                          radius: 60, // Size of the circle
-                          backgroundImage: Image.asset(
-
-                            animal.image,
-
-                            fit: BoxFit.cover,
-                          ).image,
-                        ),
-                        title: Text(animal.name),
-                        onTap: () {
-                          // Do something when an animal is tapped
-                          Navigator.of(context).pop();
-                        },
-                      ))
-                  .toList(),
-            ),
-          ),
+        return StatefulBuilder(
+          // Use StatefulBuilder to rebuild dialog on selection changes
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Choose pets for the walk:'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: animals.map((animal) {
+                    return CheckboxListTile(
+                      // Use CheckboxListTile for multiple selections
+                      title: Text(animal.name),
+                      value: _selectedAnimals.contains(animal),
+                      onChanged: (value) {
+                        setState(() {
+                          if (value!) {
+                            _selectedAnimals.add(animal);
+                          } else {
+                            _selectedAnimals.remove(animal);
+                          }
+                        });
+                      },
+                      secondary: CircleAvatar(
+                        backgroundImage: AssetImage(animal.image),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -288,22 +308,32 @@ class _MapPageState extends State<MapPage> {
                 IconButton(
                   icon: const Icon(Icons.check_circle_outline),
                   onPressed: () {
-                    // Close the dialog
-                    // Implement your camera functionality here
-                    debugPrint(imageUrl);
-                    addActivity(
-                      imageUrl: imageUrl ?? "",
-                      userId: FirebaseAuth.instance.currentUser!
-                          .uid, // Assuming the user is logged in
-                      description: 'Morning walk in the park',
-                      date: DateTime.now(),
-                      distance: calculateTotalDistance(points),
-                    );
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const NavigationBarScreen()),
                     );
+                    double distance = calculateTotalDistance(points);
+                    for (Animal animal in _selectedAnimals) {
+                      // increase km in firestore
+                      FirebaseFirestore.instance
+                          .collection('pets')
+                          .doc(animal.id)
+                          .update({
+                        'actualKmWalk': animal.actualKmWalk + 1,
+                      });
+                      // Close the dialog
+
+                      // Implement your camera functionality here
+                      debugPrint(imageUrl);
+                      addActivity(
+                        imageUrl: imageUrl ?? "",
+                        userId: FirebaseAuth.instance.currentUser!.uid,
+                        description: 'Morning walk in the park',
+                        date: DateTime.now(),
+                        distance: distance,
+                      );
+                    }
                   },
                 ),
                 IconButton(

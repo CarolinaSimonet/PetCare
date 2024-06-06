@@ -1,10 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
 import 'package:flutter/material.dart';
-
 import '../Walking/ConfirmationRFID_page.dart';
 import '../data/firebase_functions.dart';
-
 import '../home/home_page.dart';
 import '../home/myPets_page.dart';
 import '../home/profile_page.dart';
@@ -56,6 +53,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
     const MyProfileScreen(), // Messages content
   ];
   String? espID;
+
   @override
   void initState() {
     nameController = TextEditingController();
@@ -72,15 +70,8 @@ class _AddPetScreenState extends State<AddPetScreen> {
   }
 
   List<String> formatNames(String input) {
-    // Split the string into a list of names by the comma
     List<String> names = input.split(',');
-
-    // Trim whitespace around each name
     names = names.map((name) => name.trim()).toList();
-
-    // Join the names with ' e ' if there are multiple names
-
-    // If there's only one name, return it as is
     return names;
   }
 
@@ -99,7 +90,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
       owners = formatNames(otherOwner.text);
       List<String?> ownerIDs = await getUsersID(owners);
       debugPrint(ownerIDs.toString());
-      // Assuming the pet's ID is obtained somehow right after it's added
+
       String petId = await addPet(
         name: nameController.text,
         gender: gender!,
@@ -113,7 +104,6 @@ class _AddPetScreenState extends State<AddPetScreen> {
         espID: espID!,
       );
 
-      // Iterate over each owner ID and update their record
       for (String? ownerId in ownerIDs) {
         if (ownerId != null) {
           debugPrint('${ownerId} ciclo ');
@@ -137,8 +127,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
             Icon(Icons.home_filled, size: 30, color: Colors.brown.shade800),
             Icon(Icons.pets_rounded, size: 30, color: Colors.brown.shade800),
             Icon(Icons.directions_run, size: 50, color: Colors.brown.shade800),
-            Icon(Icons.analytics_outlined,
-                size: 30, color: Colors.brown.shade800),
+            Icon(Icons.analytics_outlined, size: 30, color: Colors.brown.shade800),
             Icon(Icons.person, size: 30, color: Colors.brown.shade800),
           ],
           onTap: (index) {
@@ -161,8 +150,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                       children: <Widget>[
                         TextFormField(
                           controller: nameController,
-                          decoration:
-                              const InputDecoration(labelText: 'Pet Name'),
+                          decoration: const InputDecoration(labelText: 'Pet Name'),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your pet\'s name';
@@ -185,15 +173,14 @@ class _AddPetScreenState extends State<AddPetScreen> {
                               child: Text(value),
                             );
                           }).toList(),
-                          decoration:
-                              const InputDecoration(labelText: 'Gender'),
+                          decoration: const InputDecoration(labelText: 'Gender'),
                         ),
                         const SizedBox(height: 10),
                         DropdownButtonFormField<String>(
                           value: type,
                           onChanged: (String? newValue) {
                             setState(() {
-                              type = newValue!;
+                              type = newValue;
                             });
                           },
                           items: <String>['Dog', 'Cat']
@@ -210,7 +197,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                           value: diet,
                           onChanged: (String? newValue) {
                             setState(() {
-                              diet = newValue!;
+                              diet = newValue;
                             });
                           },
                           items: <String>['Dry Food', 'Wet Food', 'Mixed']
@@ -253,8 +240,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                         ),
                         TextFormField(
                           controller: weightController,
-                          decoration:
-                              const InputDecoration(labelText: 'Weight (Kg)'),
+                          decoration: const InputDecoration(labelText: 'Weight (Kg)'),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -266,8 +252,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                         const SizedBox(height: 10),
                         TextFormField(
                           controller: portionsController,
-                          decoration: const InputDecoration(
-                              labelText: 'Food Portions per Day'),
+                          decoration: const InputDecoration(labelText: 'Food Portions per Day'),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -279,8 +264,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                         const SizedBox(height: 10),
                         TextFormField(
                           controller: kilometersController,
-                          decoration: const InputDecoration(
-                              labelText: 'Kilometers to Walk per Day'),
+                          decoration: const InputDecoration(labelText: 'Kilometers to Walk per Day'),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -292,8 +276,7 @@ class _AddPetScreenState extends State<AddPetScreen> {
                         const SizedBox(height: 10),
                         TextFormField(
                           controller: gramsController,
-                          decoration: const InputDecoration(
-                              labelText: 'Grams of Food per Day'),
+                          decoration: const InputDecoration(labelText: 'Grams of Food per Day'),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -304,15 +287,14 @@ class _AddPetScreenState extends State<AddPetScreen> {
                         ),
                         TextFormField(
                           controller: otherOwner,
-                          decoration: const InputDecoration(
-                              labelText: 'Add other owners'),
-                          validator: (value) {},
+                          decoration: const InputDecoration(labelText: 'Add other owners'),
                         ),
+                        const SizedBox(height: 10),
                         DropdownButtonFormField<String>(
-                          value: gender,
+                          value: espID,
                           onChanged: (String? newValue) {
                             setState(() {
-                              espID = newValue!;
+                              espID = newValue;
                             });
                           },
                           items: <String>['123XD467', '342FD4323']
@@ -322,16 +304,16 @@ class _AddPetScreenState extends State<AddPetScreen> {
                               child: Text(value),
                             );
                           }).toList(),
-                          decoration: const InputDecoration(
-                              labelText: 'Food Dispensor'),
+                          decoration: const InputDecoration(labelText: 'Food Dispenser'),
                         ),
                         const SizedBox(height: 20),
                         Center(
                           child: ElevatedButton(
                             onPressed: () async {
-                              // Validate returns true if the form is valid, or false otherwise.
-                              handlePetAddition();
-                              Navigator.pop(context);
+                              if (_formKey.currentState!.validate()) {
+                                handlePetAddition();
+                                Navigator.pop(context);
+                              }
                             },
                             child: const Text('Submit'),
                           ),
