@@ -43,7 +43,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         if (data is int) {
           waterLevel = data;
           // Check if data is an integer
-          int aux = (((waterLevel - 400) / 1100) * 100).toInt();
+          int aux = (((waterLevel - 400) / 1100) * 100).toInt(); 
           if (aux <= 0) {
             waterLevelPercentage = 0;
           } else if (aux > 100) {
@@ -51,6 +51,9 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           } else {
             waterLevelPercentage = aux;
           }
+ 
+        
+        
         } else if (data != null) {
           // Check if data is not null before parsing
           waterLevel = int.tryParse(data.toString()) ??
@@ -62,13 +65,14 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             waterLevel = 1500;
           }
           int aux = (((waterLevel - 400) / 1100) * 100).toInt();
-          if (aux < 0) {
+          if(aux < 0){
             waterLevelPercentage = 0;
-          } else if (aux > 100) {
-            waterLevelPercentage = 100;
-          } else {
+          }else if(aux > 100){
+            waterLevelPercentage = 100;}
+          else{
             waterLevelPercentage = aux;
           }
+          
         } else {
           waterLevel = 0; // Set to 0 if data is null
           waterLevelPercentage = 0;
@@ -207,7 +211,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 ],
               )
             else
-              Column(
+               Column(
                 // Visual representation for valid levels (0-100)
                 children: [
                   Text('0%'),
@@ -296,39 +300,26 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         },
       );
     } else {
-      // Update the 'refill' variable in the Realtime Database to true
-      _database.update({'dispenseFood' : 1
-      }).then((_) {
-        // Optionally, show a success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Refill request sent!')),
-
-          
-        );
-      }).catchError((error) {
-        // Handle errors, e.g., show an error message
-        print('Error updating refill status: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to send refill request.')),
-        );
-      });
+      // Food level is zero or negative, refill immediately
+      // Add your logic to actually refill the bowl here
     }
   }
+  // ... (rest of your existing code)
+}
 
-  Widget _buildSmallCard(String title, String value, IconData icon) {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            Icon(icon, size: 40),
-            const SizedBox(height: 5),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text(value),
-          ],
-        ),
+Widget _buildSmallCard(String title, String value, IconData icon) {
+  return Card(
+    elevation: 3,
+    child: Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Icon(icon, size: 40),
+          const SizedBox(height: 5),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(value),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }

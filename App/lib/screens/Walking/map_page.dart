@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -8,6 +7,9 @@ import 'package:petcare/screens/Walking/camara.dart';
 import 'package:petcare/screens/data/animal.dart';
 import 'package:petcare/screens/data/firebase_functions.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
+
+import 'package:petcare/screens/home/home_page.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
@@ -24,7 +26,7 @@ class _MapPageState extends State<MapPage> {
   final MapController _mapController = MapController();
   final Location _location = Location();
   late Stream<LocationData> _locationStream;
-  List<Animal> _selectedAnimals = [];
+  Animal? _selectedAnimal;
   List<Marker> markers = [];
   List<LatLng> points = [];
   Timer? _timer;
@@ -56,17 +58,9 @@ class _MapPageState extends State<MapPage> {
         throw Exception('Location permission not granted');
       }
     });
-    if (_selectedAnimals.isEmpty) {
+    if (_selectedAnimal == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        print("Show Dialog");
-
-        _showAnimalChoiceDialog().then((value) {
-          if (value != null) {
-            setState(() {
-              _selectedAnimals = value;
-            });
-          }
-        });
+        _showAnimalChoiceDialog();
       });
     }
 
@@ -92,6 +86,7 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -100,24 +95,19 @@ class _MapPageState extends State<MapPage> {
         FirebaseAuth.instance.currentUser!.uid; // Get the current user's ID
     List<Animal> pets = [];
 
-    var querySnapshot = await FirebaseFirestore.instance
-        .collection('pets')
-        .where('userId', isEqualTo: userId)
-        .get();
-
-    for (var doc in querySnapshot.docs) {
-      pets.add(Animal.fromMap(doc.data(), doc.id));
-    }
+    pets = await fetchAllAnimals();
 
     return pets;
   }
 
+
   Future<void> _showAnimalChoiceDialog() async {
-    final animals = await _fetchAnimals();
+    final animals = await fetchAllAnimals();
+
     if (!mounted) return;
     showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: false, // User must tap a button!
       builder: (BuildContext context) {
         return AlertDialog(
           insetPadding:
@@ -132,14 +122,15 @@ class _MapPageState extends State<MapPage> {
                         leading: CircleAvatar(
                           radius: 60, // Size of the circle
                           backgroundImage: Image.asset(
+
                             animal.image,
+
                             fit: BoxFit.cover,
                           ).image,
                         ),
                         title: Text(animal.name),
                         onTap: () {
                           // Do something when an animal is tapped
-                          selectedAnimal = animal;
                           Navigator.of(context).pop();
                         },
                       ))
@@ -149,8 +140,6 @@ class _MapPageState extends State<MapPage> {
         );
       },
     );
-
-    return selectedAnimals;
   }
 
   void _toggleTracking() {
@@ -299,7 +288,6 @@ class _MapPageState extends State<MapPage> {
                 IconButton(
                   icon: const Icon(Icons.check_circle_outline),
                   onPressed: () {
-                    double distance = calculateTotalDistance(points);
                     // Close the dialog
                     // Implement your camera functionality here
                     debugPrint(imageUrl);
@@ -309,14 +297,8 @@ class _MapPageState extends State<MapPage> {
                           .uid, // Assuming the user is logged in
                       description: 'Morning walk in the park',
                       date: DateTime.now(),
-                      distance: distance,
+                      distance: calculateTotalDistance(points),
                     );
-
-                    // atualizar o counter da distaniac nos caes
-                    for (var animal in _selectedAnimals) {
-                      updateAnimalDistance(animal, distance);
-                    }
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -464,12 +446,5 @@ class _MapPageState extends State<MapPage> {
         ),
       ]),
     );
-  }
-
-  void updateAnimalDistance(Animal animal, double calculateTotalDistance) {
-    dynamic doc = FirebaseFirestore.instance.collection('pets').doc(animal.id);
-    doc.update({
-      'actualKmWalk': calculateTotalDistance + animal.actualKmWalk,
-    });
   }
 }
