@@ -9,7 +9,7 @@ import '../../main.dart';
 import 'configrfid_page.dart';
 
 class MyProfileScreen extends StatefulWidget {
-  const MyProfileScreen({Key? key}) : super(key: key);
+  const MyProfileScreen({super.key});
 
   @override
   State<MyProfileScreen> createState() => _MyProfileScreenState();
@@ -201,15 +201,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: () {
             Navigator.pop(context, controller.text);
             Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => NavigationBarScreen()));
+                MaterialPageRoute(builder: (context) => const NavigationBarScreen()));
           },
-          child: Text('Save'),
+          child: const Text('Save'),
         ),
       ],
     );
@@ -367,7 +367,7 @@ Widget myLogOut(BuildContext context) {
                   color: Colors.brown.shade800),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -385,12 +385,12 @@ Widget myLogOut(BuildContext context) {
               Auth().signOut();
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LandingPage()),
+                MaterialPageRoute(builder: (context) => const LandingPage()),
               );
             },
             child: const Text('Logout'),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
     ),
@@ -428,7 +428,7 @@ Widget ConnectRfid(BuildContext context) {
                   color: Colors.brown.shade800),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -445,13 +445,13 @@ Widget ConnectRfid(BuildContext context) {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ConfigRfid_page()),
+                MaterialPageRoute(builder: (context) => const ConfigRfid_page()),
               );
               // Assuming you have a MapPage to navigate to
             },
             child: const Text('Connect'),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
     ),

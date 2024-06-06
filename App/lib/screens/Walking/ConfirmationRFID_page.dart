@@ -62,7 +62,7 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
 
       // Adding a timeout to the request
       final response =
-          await http.get(url).timeout(Duration(seconds: 30), onTimeout: () {
+          await http.get(url).timeout(const Duration(seconds: 30), onTimeout: () {
         Navigator.pop(context);
         throw TimeoutException(
             'The connection has timed out, Please try again!');
@@ -109,12 +109,12 @@ class _ConfirmationRfid_pageState extends State<ConfirmationRfid_page> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),

@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class ActivitiesListPage extends StatefulWidget {
+  const ActivitiesListPage({super.key});
+
   @override
   _ActivitiesListPageState createState() => _ActivitiesListPageState();
 }
@@ -35,7 +37,7 @@ class _ActivitiesListPageState extends State<ActivitiesListPage> {
         ),
       ),
       body: userId == null
-          ? Center(child: Text("No user logged in"))
+          ? const Center(child: Text("No user logged in"))
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('activities')
@@ -47,7 +49,7 @@ class _ActivitiesListPageState extends State<ActivitiesListPage> {
                 }
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   default:
                     return ListView(
                       children:
@@ -70,7 +72,7 @@ class _ActivitiesListPageState extends State<ActivitiesListPage> {
                               ),
                               ListTile(
                                 title: Text(data['description']),
-                                subtitle: Text('Date: ${formattedDate}'),
+                                subtitle: Text('Date: $formattedDate'),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),

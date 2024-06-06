@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Auth {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -109,7 +108,7 @@ Future<void> addActivity(
   }
 }
 
-Future<void> addPet({
+Future<String> addPet({
   required String name,
   required String gender,
   required String type,
@@ -118,14 +117,14 @@ Future<void> addPet({
   required String diet,
   required String portions,
   required String killometers,
-  required String grams
+  required String grams,
+  required String espID,
+  String? userId,
 }) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-
-
   try {
-    await firestore.collection('pets').add({
+    DocumentReference docRef = await firestore.collection('pets').add({
       'name': name,
       'gender': gender,
       'type': type,
@@ -137,15 +136,78 @@ Future<void> addPet({
       "kmWalk": killometers,
       "portionsFood": portions,
       "weight": weight,
-      'createdAt': FieldValue.serverTimestamp(), // server-side timestamp
+      'createdAt': FieldValue.serverTimestamp(),
+      'userId': Auth().getCurrentUserId(),
+      'EspID': espID
     });
     print("New Pet successfully added!");
+    print("New Pet successfully added with ID: ${docRef.id}");
+    return docRef.id; // Return the document ID of the newly added pet
   } catch (e) {
     print("Error adding Pet: $e");
     throw Exception("Failed to add Pet");
   }
 }
 
+Future<String?> getUserIdByUsername(String username) async {
+  // Access Firestore instance
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  try {
+    print("${username} getUserIdByUsername");
+    // Perform a query on the 'users' collection where 'username' field matches the provided username
+    var result = await firestore
+        .collection('users')
+        .where('name', isEqualTo: username)
+        .limit(1)
+        .get();
+
+    if (result.docs.isNotEmpty) {
+      // Assuming 'userId' is the field that stores the user's ID
+      print('${result.docs.first.id} getUserIdByUsername');
+      return result.docs.first.id as String?;
+    } else {
+      print('No user found with that username.');
+      return null; // Return null if no user is found
+    }
+  } catch (e) {
+    print('Error fetching user ID: $e');
+    return null; // Return null if there's an error
+  }
+}
+
+Future<void> updateUserWithPets(String userId, String petId) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  // Reference to the user's document
+  DocumentReference userDoc = firestore.collection('users').doc(userId);
+
+  firestore.runTransaction((transaction) async {
+    // Get the document snapshot
+    DocumentSnapshot snapshot = await transaction.get(userDoc);
+
+    if (!snapshot.exists) {
+      // If the user document does not exist, create it and initialize the pets array
+      transaction.set(userDoc, {
+        'pets': [petId] // Initializes with the new petId in an array
+      });
+      print("User document created and pet added.");
+    } else {
+      // If the document exists, safely retrieve the pets array using explicit casting
+      var data =
+          snapshot.data() as Map<String, dynamic>; // Safely cast the data
+      List<String> pets = List<String>.from(data['pets'] ?? []);
+      if (!pets.contains(petId)) {
+        pets.add(petId);
+      }
+      transaction.update(userDoc, {'pets': pets});
+      print("Pet added to existing user document.");
+    }
+  }).catchError((e) {
+    print("Error updating user with pets: $e");
+    throw Exception("Failed to update or create user with pets");
+  });
+}
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -159,7 +221,7 @@ class AuthService {
     final User? user = _firebaseAuth.currentUser;
     if (user != null) {
       DocumentSnapshot userData =
-          await _firestore.collection('users').doc(user!.uid).get();
+          await _firestore.collection('users').doc(user.uid).get();
       return userData['role'];
     } else {
       print('error :user null');

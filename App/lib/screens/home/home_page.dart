@@ -5,8 +5,6 @@ import 'package:intl/intl.dart';
 
 import '../../utils/data_classes.dart';
 import '../../utils/factory.dart';
-import '../general/generic_app_bar.dart';
-import '../myPets/addPet_page.dart';
 import '../welcome/welcome_page.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -47,15 +47,7 @@ class GenericAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-        Visibility(
-          visible: visibility,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0, right: 20.0),
-            child:
-                actions![0], // Assuming only one action is provided
-            ),
-          ),
-      ],
+         ],
     );
   }
 

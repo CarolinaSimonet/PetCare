@@ -7,7 +7,6 @@ import 'package:petcare/screens/Walking/map_page.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
 import 'package:petcare/screens/home/home_page.dart';
 import 'package:petcare/screens/home/myPets_page.dart';
-import 'package:petcare/screens/welcome/login_page.dart';
 import 'package:petcare/screens/welcome/welcome_page.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

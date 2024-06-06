@@ -7,11 +7,11 @@ import 'package:petcare/screens/Walking/camara.dart';
 import 'package:petcare/screens/data/animal.dart';
 import 'package:petcare/screens/data/firebase_functions.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
-import 'package:petcare/screens/home/home_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:petcare/screens/Walking/auxFunctions.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -29,7 +29,7 @@ class _MapPageState extends State<MapPage> {
   Timer? _timer;
   int _seconds = 0;
   String? imageUrl;
-
+  Animal? selectedAnimal;
   String get _formattedTime =>
       '${(_seconds ~/ 3600).toString().padLeft(2, '0')}:${((_seconds % 3600) ~/ 60).toString().padLeft(2, '0')}:${(_seconds % 60).toString().padLeft(2, '0')}';
 
@@ -46,7 +46,7 @@ class _MapPageState extends State<MapPage> {
     super.initState();
     if (imageUrl != null) {
       // If there's an imageUrl, you might want to do something with it
-      print("Received image URL: ${imageUrl}");
+      print("Received image URL: $imageUrl");
       // You can also display the image or use it in any other required logic
     }
     _locationStream = _location.onLocationChanged;
@@ -83,8 +83,28 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  Future<List<Animal>> _fetchAnimals() async {
+    String userId =
+        FirebaseAuth.instance.currentUser!.uid; // Get the current user's ID
+    List<Animal> pets = [];
+
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('pets')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      pets.add(Animal.fromMap(doc.data(), doc.id));
+    }
+
+    return pets;
+  }
+
   Future<void> _showAnimalChoiceDialog() async {
-    final animals = await fetchAnimals();
+    final animals = await _fetchAnimals();
     if (!mounted) return;
     showDialog(
       context: context,
@@ -103,13 +123,14 @@ class _MapPageState extends State<MapPage> {
                         leading: CircleAvatar(
                           radius: 60, // Size of the circle
                           backgroundImage: Image.asset(
-                            'assets/${animal.image}',
+                            animal.image,
                             fit: BoxFit.cover,
                           ).image,
                         ),
                         title: Text(animal.name),
                         onTap: () {
                           // Do something when an animal is tapped
+                          selectedAnimal = animal;
                           Navigator.of(context).pop();
                         },
                       ))

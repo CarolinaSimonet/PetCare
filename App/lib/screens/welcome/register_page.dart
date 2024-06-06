@@ -43,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => LandingPage()),
+        MaterialPageRoute(builder: (context) => const LandingPage()),
       );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

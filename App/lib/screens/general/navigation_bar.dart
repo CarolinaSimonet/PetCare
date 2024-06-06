@@ -21,7 +21,7 @@ class _NavigationBarState extends State<NavigationBarScreen> {
     const HomeScreen(), // Home content
     const MyPetsScreen(),
     const ConfirmationRfid_page(),
-    ActivitiesListPage(),
+    const ActivitiesListPage(),
     const MyProfileScreen(),
   ];
 

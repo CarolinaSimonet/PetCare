@@ -1,4 +1,3 @@
-
 class Animal {
   final String id;
   final String name;
@@ -10,6 +9,17 @@ class Animal {
       required this.name,
       required this.type,
       required this.image});
+
+  factory Animal.fromMap(Map<String, dynamic> data, String id) {
+    return Animal(
+      name: data['name'] ?? 'Unnamed',
+      type: data['type'] ?? 'Unknown',
+      image: data['type'] == 'Dog'
+          ? 'assets/images/labrador.png'
+          : 'assets/images/cat.png',
+      id: id,
+    );
+  }
 }
 
 Future<List<Animal>> fetchAnimals() async {
