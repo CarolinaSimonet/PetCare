@@ -84,7 +84,7 @@ async function sendNotificationToAllUsers(message) {
   } catch (error) {
     console.error("Error sending notifications:", error);
   }
-}
+} 
 
 async function turnLedOn() {
   console.log("LED turned on");
@@ -219,10 +219,9 @@ app.get("/assignRFID", async (req, res) => {
 
 // Function to check if RFID is valid for a user
 async function getRFIDValid(userId) {
-  
-  // Reset the RFID value in the database to -1
-  await db.ref(`/rfid/uid`).set(-1);
-
+   // Reset the RFID value in the database to -1
+   await db.ref(`/rfid/uid`).set(-1);
+   
   try {
     const userSnapshot = await dbFS.collection("users").doc(userId).get();
 

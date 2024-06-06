@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -8,6 +9,7 @@ import 'package:petcare/screens/data/animal.dart';
 import 'package:petcare/screens/data/firebase_functions.dart';
 import 'package:petcare/screens/general/navigation_bar.dart';
 import 'package:petcare/screens/home/home_page.dart';
+import 'package:petcare/utils/data_classes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:camera/camera.dart';
@@ -23,7 +25,7 @@ class _MapPageState extends State<MapPage> {
   final MapController _mapController = MapController();
   final Location _location = Location();
   late Stream<LocationData> _locationStream;
-  Animal? _selectedAnimal;
+  List<Animal> _selectedAnimals = [];
   List<Marker> markers = [];
   List<LatLng> points = [];
   Timer? _timer;
@@ -55,9 +57,17 @@ class _MapPageState extends State<MapPage> {
         throw Exception('Location permission not granted');
       }
     });
-    if (_selectedAnimal == null) {
+    if (_selectedAnimals.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showAnimalChoiceDialog();
+        print("Show Dialog");
+
+        _showAnimalChoiceDialog().then((value) {
+          if (value != null) {
+            setState(() {
+              _selectedAnimals = value;
+            });
+          }
+        });
       });
     }
 
@@ -83,42 +93,87 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
-  Future<void> _showAnimalChoiceDialog() async {
-    final animals = await fetchAnimals();
-    if (!mounted) return;
-    showDialog(
+  Future<List<Animal>> _showAnimalChoiceDialog() async {
+    final animals = await fetchAllAnimals();
+    if (!mounted) return [];
+
+    List<Animal> selectedAnimals = [];
+
+    print("Show Dialog2");
+
+    await showDialog(
       context: context,
-      barrierDismissible: false, // User must tap a button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-          title: const Text(' Com que vais passear ?'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: animals
-                  .map((animal) => ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10.0, vertical: 5.0),
-                        leading: CircleAvatar(
-                          radius: 60, // Size of the circle
-                          backgroundImage: Image.asset(
-                            'assets/${animal.image}',
-                            fit: BoxFit.cover,
-                          ).image,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              insetPadding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+              title: const Text(' Com quem vais passear ?'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: animals.map((animal) {
+                    bool isChecked = selectedAnimals.contains(animal);
+                    return CheckboxListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10.0, vertical: 5.0),
+                      title: Text(animal.name),
+                      value: isChecked,
+                      onChanged: (newValue) {
+                        setState(() {
+                          if (newValue!) {
+                            selectedAnimals.add(animal);
+                          } else {
+                            selectedAnimals.remove(animal);
+                          }
+                        });
+                      },
+                      secondary: CircleAvatar(
+                        radius: 60,
+                        backgroundImage: Image.asset(
+                          'assets/${animal.image}',
+                          fit: BoxFit.cover,
+                        ).image,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.pop(context, []);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NavigationBarScreen()));
+                    // Return an empty list on cancel
+                  },
+                ),
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    if (selectedAnimals.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Por favor selecione um animal'),
                         ),
-                        title: Text(animal.name),
-                        onTap: () {
-                          // Do something when an animal is tapped
-                          Navigator.of(context).pop();
-                        },
-                      ))
-                  .toList(),
-            ),
-          ),
+                      );
+                      return;
+                    } else
+                      Navigator.pop(context, selectedAnimals);
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
+
+    return selectedAnimals;
   }
 
   void _toggleTracking() {
@@ -267,6 +322,7 @@ class _MapPageState extends State<MapPage> {
                 IconButton(
                   icon: const Icon(Icons.check_circle_outline),
                   onPressed: () {
+                    double distance = calculateTotalDistance(points);
                     // Close the dialog
                     // Implement your camera functionality here
                     debugPrint(imageUrl);
@@ -276,8 +332,14 @@ class _MapPageState extends State<MapPage> {
                           .uid, // Assuming the user is logged in
                       description: 'Morning walk in the park',
                       date: DateTime.now(),
-                      distance: calculateTotalDistance(points),
+                      distance: distance,
                     );
+
+                    // atualizar o counter da distaniac nos caes
+                    for (var animal in _selectedAnimals) {
+                      updateAnimalDistance(animal, distance);
+                    }
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -425,5 +487,12 @@ class _MapPageState extends State<MapPage> {
         ),
       ]),
     );
+  }
+
+  void updateAnimalDistance(Animal animal, double calculateTotalDistance) {
+    dynamic doc = FirebaseFirestore.instance.collection('pets').doc(animal.id);
+    doc.update({
+      'actualKmWalk': calculateTotalDistance + animal.actualKmWalk,
+    });
   }
 }
