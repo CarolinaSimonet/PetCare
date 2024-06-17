@@ -250,6 +250,58 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  void _showDescription(TextEditingController _descriptionController) async {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Center(child: Text('Add Description')),
+          content: TextField(
+            controller: _descriptionController,
+            decoration: const InputDecoration(
+              labelText: 'Enter description',
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                _handleAddDescription(_descriptionController);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleAddDescription(TextEditingController _descriptionController) {
+    double distance = calculateTotalDistance(points);
+    for (Animal animal in _selectedAnimals) {
+      // increase km in firestore
+      FirebaseFirestore.instance.collection('pets').doc(animal.id).update({
+        'actualKmWalk': animal.actualKmWalk + 1,
+      });
+      // Close the dialog
+
+      // Implement your camera functionality here
+      debugPrint(imageUrl);
+      addActivity(
+        imageUrl: imageUrl ?? "",
+        userId: FirebaseAuth.instance.currentUser!.uid,
+        description: _descriptionController.text ?? ' ',
+        date: DateTime.now(),
+        distance: distance,
+      );
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NavigationBarScreen()),
+    );
+  }
+
   void updateLocation(LatLng newLocation) {
     setState(() {
       points.add(newLocation);
@@ -295,6 +347,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   void _finalizeAlertDialog() {
+    TextEditingController _descriptionController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -307,39 +360,13 @@ class _MapPageState extends State<MapPage> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.check_circle_outline),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NavigationBarScreen()),
-                    );
-                    double distance = calculateTotalDistance(points);
-                    for (Animal animal in _selectedAnimals) {
-                      // increase km in firestore
-                      FirebaseFirestore.instance
-                          .collection('pets')
-                          .doc(animal.id)
-                          .update({
-                        'actualKmWalk': animal.actualKmWalk + 1,
-                      });
-                      // Close the dialog
-
-                      // Implement your camera functionality here
-                      debugPrint(imageUrl);
-                      addActivity(
-                        imageUrl: imageUrl ?? "",
-                        userId: FirebaseAuth.instance.currentUser!.uid,
-                        description: 'Morning walk in the park',
-                        date: DateTime.now(),
-                        distance: distance,
-                      );
-                    }
-                  },
+                  onPressed: () {},
                 ),
                 IconButton(
                   icon: const Icon(Icons.cancel_outlined),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
+                    _showDescription(_descriptionController);
+
                     // Implement your camera functionality here
                   },
                 ),

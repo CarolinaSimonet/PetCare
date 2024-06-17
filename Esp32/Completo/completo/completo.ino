@@ -244,6 +244,8 @@ void loop()
   long bowl1Distance = fBowl1.sense();
   long wBowlLevel = wBowl1.sense();
 
+
+ 
      // Fill water bowl and control LED
     if (wBowlLevel < 400 && !ledState)
     {                               // Check if bowl is not full AND LED is off
@@ -281,7 +283,7 @@ void loop()
   }
 
   // Check if the current time is greater than the last read time plus the interval
-  if (currentMillis - lastSensorReadTime >= interval)
+  if (true)//currentMillis - lastSensorReadTime >= interval)
   {
     lastSensorReadTime = currentMillis;
 

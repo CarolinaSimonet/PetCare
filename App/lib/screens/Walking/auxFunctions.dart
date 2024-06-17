@@ -10,6 +10,7 @@ double calculateTotalDistance(List<LatLng> points) {
     var distance = _calculateDistanceHaversine(
         p1.latitude, p1.longitude, p2.latitude, p2.longitude);
     totalDistance += distance;
+    print(distance.toString() + " " + totalDistance.toString());
   }
   return totalDistance;
 }
